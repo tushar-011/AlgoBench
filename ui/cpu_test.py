@@ -120,7 +120,10 @@ class CPUTestPage(ctk.CTkFrame):
 
         self.workload_info = ctk.CTkLabel(
             panel,
-            text="Standard performance test\n400,000 total items",
+            text=(
+                "Standard performance test\n"
+                "400,000 total items"
+            ),
             text_color="gray",
             justify="left"
         )

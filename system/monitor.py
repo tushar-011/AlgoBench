@@ -3,7 +3,34 @@ import socket
 import time
 
 import psutil
+import subprocess
 
+def get_windows_cpu_name():
+
+    try:
+        command = [
+            "powershell",
+            "-NoProfile",
+            "-Command",
+            "(Get-CimInstance Win32_Processor).Name"
+        ]
+
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            creationflags=subprocess.CREATE_NO_WINDOW
+        )
+
+        cpu_name = result.stdout.strip()
+
+        if cpu_name:
+            return cpu_name
+
+    except Exception:
+        pass
+
+    return platform.processor()
 
 def get_cpu_usage():
     return psutil.cpu_percent(interval=None)
@@ -48,7 +75,7 @@ def get_disk_usage():
 
 
 def get_system_info():
-    processor = platform.processor()
+    processor = get_windows_cpu_name()
 
     if not processor:
         processor = "Processor information unavailable"
