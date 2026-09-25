@@ -1,197 +1,255 @@
-# AlgoBench
+# ⚙️ AlgoBench
 
-> A modern offline desktop application for system performance benchmarking, monitoring, stress testing, and algorithm-based performance comparison.
+> **An Offline System Benchmarking, Monitoring, Stress Testing, and Algorithm Performance Comparison Desktop Application built with Python.**
 
----
-
-## Overview
-
-**AlgoBench** is a Python-based offline desktop application designed to monitor and benchmark the performance of a computer system.
-
-The application provides real-time system information, CPU and memory testing, performance comparison using different data-processing methods, controlled stress testing, complete system benchmarking, history tracking, theme customization, and a reference comparison for the final benchmark score.
-
-AlgoBench is designed to be easy to understand for normal users while still using Data Structures and Algorithms concepts internally.
+AlgoBench is a college mini-project designed to demonstrate practical **Data Structures and Algorithms (DAA)** concepts through a real-world system benchmarking application. It combines a modern desktop interface with CPU benchmarking, memory testing, sorting-algorithm comparison, stress testing, live system monitoring, SQLite history, and complete system scoring.
 
 ---
 
-## Features
+## ✨ Highlights
 
-### Dashboard
-
-The Dashboard provides a live overview of the system.
-
-It displays:
-
-- CPU Usage
-- Memory Usage
-- Battery Percentage
-- Charging Status
-- Storage Usage
-- Live CPU Graph
-- Live Memory Graph
-- System Health Status
-
-The dashboard updates automatically according to the refresh rate selected in Settings.
-
----
-
-### System Overview
-
-The System Overview page displays detailed hardware and system information.
-
-It includes:
-
-- Device Name
-- Operating System
-- Architecture
-- Processor Name
-- Physical CPU Cores
-- CPU Threads
-- Memory Usage
-- Storage Usage
-- Battery Status
-- CPU Activity
-- System Uptime
-
-This page gives the user a quick overview of the hardware configuration of the machine running AlgoBench.
+- 🖥️ Live CPU, memory, storage, and battery monitoring
+- 📊 Real-time CPU and memory performance graph
+- ⚡ CPU benchmarking with Light, Medium, and Heavy workloads
+- 🧠 Memory performance benchmarking
+- 🔀 Sorting-algorithm performance comparison
+- 🔥 Controlled system stress testing
+- 🧪 Complete automated system benchmark
+- 📈 Overall AlgoBench system score and rating
+- 🎯 High-end reference-score comparison
+- 🗃️ Local benchmark history using SQLite
+- ⚙️ Persistent application settings
+- 🌙 Light, Dark, and System themes
+- 🖥️ Detailed system and processor information
+- ▶️ One-click Windows launcher using a `.bat` file
+- 📦 Standalone Windows application support using PyInstaller
+- 🔒 Fully offline operation after installation
 
 ---
 
-### CPU Performance Test
+# 📌 Table of Contents
 
-The CPU Performance Test measures how quickly the processor handles controlled workloads.
+- [About the Project](#-about-the-project)
+- [Features](#-features)
+- [DAA Concepts Demonstrated](#-daa-concepts-demonstrated)
+- [Tech Stack](#%EF%B8%8F-tech-stack)
+- [Project Structure](#-project-structure)
+- [Requirements](#-requirements)
+- [Installation](#-installation)
+- [Running the Application](#%EF%B8%8F-running-the-application)
+- [Using the BAT Launcher](#%EF%B8%8F-using-the-bat-launcher)
+- [Building the EXE](#-building-the-exe)
+- [Major Application Modules](#-major-application-modules)
+- [Benchmark Scoring](#-benchmark-scoring)
+- [Local Database](#%EF%B8%8F-local-database)
+- [Testing](#-testing)
+- [Future Improvements](#-future-improvements)
+- [GitHub Setup](#-github-setup)
+- [Project Status](#-project-status)
+- [Author](#%EF%B8%8F-author)
 
-Available workload levels:
+---
+
+# 📖 About the Project
+
+**AlgoBench** is an offline desktop application developed as a **Data Structures and Algorithms mini-project**.
+
+The application allows users to:
+
+- Monitor live system performance
+- View processor and hardware information
+- Benchmark CPU performance
+- Benchmark memory performance
+- Compare multiple sorting algorithms
+- Run a controlled stress test
+- Execute a complete system benchmark
+- Generate an overall AlgoBench score
+- Compare the score with a high-end internal reference
+- Save benchmark history locally
+- Customize the application appearance
+
+The application is designed so that normal users see simple and understandable performance terminology while the actual algorithm implementations remain in the backend.
+
+---
+
+# 🚀 Features
+
+## 🏠 Dashboard
+
+The Dashboard provides a live overview of the computer.
+
+### Live information
+
+- CPU usage
+- Memory usage
+- Battery percentage
+- Charging status
+- Storage usage
+- CPU activity graph
+- Memory activity graph
+- System health indicator
+
+The graph refresh rate can be changed from the Settings page.
+
+---
+
+## 🖥️ System Overview
+
+The System Overview page displays detailed hardware and operating-system information.
+
+### Information displayed
+
+- Device name
+- Operating system
+- System architecture
+- Processor name
+- Physical CPU cores
+- Logical CPU threads
+- CPU utilization
+- Memory usage
+- Storage usage
+- Battery information
+- System uptime
+
+AlgoBench uses Windows system information together with `psutil` to provide accurate processor and hardware details.
+
+---
+
+## ⚡ CPU Performance Test
+
+The CPU Performance Test measures processor performance using controlled workloads.
+
+### Workload modes
 
 - Light
 - Medium
 - Heavy
 
-The test displays:
+### Results
 
-- Performance Score
-- Performance Rating
-- Processing Time
-- Work Completed
-- Processing Rate
-- Peak CPU Usage
-- Average CPU Usage
+- CPU score
+- Performance rating
+- Execution time
+- Total work processed
+- Processing rate
+- Peak CPU usage
+- Average CPU usage
 
-Internally, the CPU benchmark uses **Merge Sort** as part of the processing workload.
+The benchmark internally uses **Merge Sort** to generate measurable processor workloads.
 
 ---
 
-### Memory Performance Test
+## 🧠 Memory Performance Test
 
-The Memory Performance Test evaluates how efficiently the system handles memory-intensive operations.
+The Memory Performance Test evaluates processing and memory behavior during controlled workloads.
 
-Available workload levels:
+### Workload modes
 
 - Light
 - Medium
 - Heavy
 
-The test displays:
+### Results
 
-- Memory Score
-- Performance Rating
-- Processing Time
-- Work Completed
-- Peak Memory Usage
-- Memory Increase
+- Memory score
+- Performance rating
+- Execution time
+- Work completed
+- Peak memory usage
+- Memory increase
 
-The application also tracks memory allocation during the benchmark.
-
----
-
-### Performance Comparison
-
-The Performance Comparison page compares multiple processing methods using the same dataset.
-
-The methods currently included are:
-
-- Basic Data Processing — Bubble Sort
-- Sequential Data Processing — Insertion Sort
-- Balanced Data Processing — Merge Sort
-- Fast Partition Processing — Quick Sort
-
-The application measures the execution time of each method and displays visual comparison bars.
-
-The fastest method in the current test is shown as the best-performing method.
-
-This result is based only on the selected workload and should not be treated as a universal ranking of algorithms.
+Python's `tracemalloc` and `psutil` are used to monitor memory behavior.
 
 ---
 
-### System Stress Test
+## 🔀 Performance Comparison
 
-The System Stress Test applies a controlled workload to the system for a selected duration.
+The Performance Comparison module compares multiple sorting algorithms using the same generated dataset.
 
-Available stress levels:
+### Processing methods
+
+| User-facing Name | Algorithm |
+|---|---|
+| Basic Data Processing | Bubble Sort |
+| Sequential Data Processing | Insertion Sort |
+| Balanced Data Processing | Merge Sort |
+| Fast Partition Processing | Quick Sort |
+
+### Workload modes
 
 - Light
 - Medium
 - Heavy
 
-Available durations:
+The module measures execution time for each algorithm and displays visual comparison bars.
 
-- 10 Seconds
-- 20 Seconds
-- 30 Seconds
-
-Live monitoring includes:
-
-- CPU Usage
-- Memory Usage
-- Elapsed Time
-- Test Progress
-- Processing Cycles
-- Work Processed
-- Peak CPU Usage
-- Peak Memory Usage
-- System Stability
-
-The test can also be stopped manually.
+The fastest result shown is the fastest **for that specific benchmark run and workload**, not a universal algorithm ranking.
 
 ---
 
-### Complete System Test
+## 🔥 System Stress Test
 
-The Complete System Test combines multiple benchmark modules into a single automated test.
+The System Stress Test applies a controlled workload for a selected amount of time.
 
-It runs:
+### Stress levels
+
+- Light
+- Medium
+- Heavy
+
+### Available durations
+
+- 10 seconds
+- 20 seconds
+- 30 seconds
+
+### Live monitoring
+
+- CPU usage
+- Memory usage
+- Elapsed time
+- Test progress
+- Processing cycles
+- Work processed
+- Peak CPU usage
+- Peak memory usage
+- Stability result
+
+The test can be manually stopped at any time.
+
+Manually stopped tests are not stored as completed benchmark results.
+
+---
+
+## 🧪 Complete System Test
+
+The Complete System Test automatically runs the main benchmark modules in sequence.
+
+### Benchmark sequence
 
 1. CPU Performance Test
 2. Memory Performance Test
 3. Processing Comparison
 4. System Stress Test
+5. Final score calculation
 
-The final result includes:
+### Final results
 
-- Overall System Score
-- Overall Rating
-- CPU Score
-- Memory Score
-- Best Processing Method
-- System Stability
-- Reference Comparison
+- Overall system score
+- Overall rating
+- CPU score
+- Memory score
+- Best processing method
+- System stability
+- Reference comparison
 
-The score is calculated using weighted benchmark results.
-
-Current weighting:
-
-- CPU Performance: 35%
-- Memory Performance: 30%
-- Processing Performance: 20%
-- Stress Stability: 15%
+This provides a single summary of the system's performance inside AlgoBench.
 
 ---
 
-### Reference Comparison
+## 🎯 Reference Comparison
 
-The Complete System Test also contains a reference-comparison section.
-
-It compares the user's AlgoBench score with a fixed high-end reference score.
+AlgoBench compares the final Complete System Test score with an internal high-end reference score.
 
 Example:
 
@@ -199,116 +257,168 @@ Example:
 Your AlgoBench Score: 6200
 High-End Reference: 8500
 Relative Performance: 72.9%
-````
+```
 
-This comparison uses the same AlgoBench score scale.
+The comparison is calculated using:
 
-It does not compare AlgoBench scores directly with Cinebench, Geekbench, PassMark, or other external benchmark scores.
+```text
+Relative Performance = User Score / Reference Score × 100
+```
 
-The currently used high-end reference value is an internal reference score.
+> The current reference value is an internal AlgoBench reference target. It is not a Cinebench, Geekbench, PassMark, or manufacturer benchmark result.
 
 ---
 
-### Test History
+## 🗃️ Test History
 
-AlgoBench automatically stores completed benchmark results locally.
+Completed benchmark results are stored locally using SQLite.
 
-The History page displays:
+### History information
 
-- Test Type
-- Workload
+- Test type
+- Workload / mode
 - Score
-- Result / Rating
-- Date and Time
+- Rating / result
+- Date and time
+- Benchmark details
 
-History is stored using SQLite.
+### Available actions
 
-The History page also provides:
+- Refresh history
+- Clear history
 
-- Refresh
-- Clear History
-
----
-
-### Settings
-
-The Settings page allows the user to customize the application.
-
-Available options include:
-
-- Dark Mode
-- Light Mode
-- System Theme
-- Dashboard Refresh Rate
-- Clear Test History
-
-Available dashboard refresh rates:
-
-- 1 Second
-- 2 Seconds
-- 5 Seconds
-
-Settings are saved locally and automatically restored when the application is opened again.
+No external database server is required.
 
 ---
 
-## About AlgoBench
+## ⚙️ Settings
 
-AlgoBench is an offline system-performance benchmarking application created using Python.
+The Settings page allows users to customize AlgoBench.
 
-The application combines:
+### Available settings
 
-- Real-time system monitoring
-- CPU benchmarking
-- Memory benchmarking
+- Dark theme
+- Light theme
+- System theme
+- Dashboard refresh rate
+- Clear benchmark history
+
+### Refresh-rate options
+
+- 1 second
+- 2 seconds
+- 5 seconds
+
+Settings are stored locally and automatically restored when the application starts again.
+
+---
+
+# 🧠 DAA Concepts Demonstrated
+
+AlgoBench demonstrates multiple Data Structures and Algorithms concepts through practical benchmarking.
+
+## Sorting Algorithms
+
+### Bubble Sort
+
+Used as the basic comparison algorithm.
+
+Typical time complexity:
+
+```text
+O(n²)
+```
+
+---
+
+### Insertion Sort
+
+Used for sequential data-processing comparison.
+
+Typical time complexity:
+
+```text
+O(n²)
+```
+
+---
+
+### Merge Sort
+
+Used in CPU, memory, and stress workloads.
+
+Typical time complexity:
+
+```text
+O(n log n)
+```
+
+---
+
+### Quick Sort
+
+Used as a partition-based performance comparison algorithm.
+
+Typical average time complexity:
+
+```text
+O(n log n)
+```
+
+---
+
+## Algorithm Comparison
+
+AlgoBench runs algorithms against comparable datasets and measures their actual execution time.
+
+This demonstrates:
+
+- Runtime measurement
 - Algorithm comparison
-- Stress testing
-- Complete system benchmarking
-- Persistent benchmark history
-- User-configurable settings
-- Reference-based performance comparison
-
-The project is designed to demonstrate the practical implementation of Python programming, Data Structures and Algorithms, desktop GUI development, system monitoring, databases, multithreading, and performance measurement.
+- Input-size effects
+- Workload scaling
+- Practical performance differences
 
 ---
 
-## Algorithms Used
+## Workload Scaling
 
-AlgoBench currently uses the following algorithms internally:
+Different benchmark modes use different input sizes.
 
-- Bubble Sort
-- Insertion Sort
-- Merge Sort
-- Quick Sort
+```text
+Light < Medium < Heavy
+```
 
-These algorithms are used to generate controlled workloads and compare processing performance.
-
-The user interface uses simple user-friendly descriptions while the algorithm implementation remains in the backend.
+This helps demonstrate how algorithms and system resources behave as workload size increases.
 
 ---
 
-## Tech Stack
+# 🛠️ Tech Stack
 
-| Technology | Purpose |
+| Layer / Technology | Purpose |
 |---|---|
-| Python                   | Core programming language                        |
-| CustomTkinter            | Desktop graphical user interface                 |
-| psutil                   | System monitoring and hardware statistics        |
-| Matplotlib               | Live system-performance graphs                   |
-| SQLite                   | Local test-history and settings database         |
-| threading                | Background benchmark execution                   |
-| queue                    | Safe communication between worker threads and UI |
-| tracemalloc              | Memory monitoring                                |
-| time / time.perf_counter | Performance measurement                          |
-| pathlib                  | File and database paths                          |
-| subprocess               | Windows processor information                    |
-| PyInstaller              | Building the standalone Windows application      |
-| Git                      | Version control                                  |
-| GitHub                   | Project repository and source-code hosting       |
+| Python | Core programming language |
+| CustomTkinter | Desktop graphical user interface |
+| psutil | CPU, memory, disk, battery, and system monitoring |
+| Matplotlib | Live CPU and memory graphs |
+| SQLite | Local benchmark history and settings |
+| threading | Background benchmark execution |
+| queue | Thread-safe UI result communication |
+| tracemalloc | Python memory allocation tracking |
+| time / perf_counter | Benchmark timing |
+| pathlib | File and database path handling |
+| subprocess | Windows processor information |
+| platform | Operating-system and architecture information |
+| socket | Device-name information |
+| PyInstaller | Building the standalone Windows application |
+| Visual Studio Code | Development environment |
+| Git | Version control |
+| GitHub | Repository hosting |
+| Batch File | One-click Windows launcher |
 
 ---
 
-## Project Structure
+# 📁 Project Structure
 
 ```text
 AlgoBench/
@@ -355,47 +465,27 @@ AlgoBench/
 └── .gitignore
 ```
 
+> The exact structure may change slightly as the project evolves.
+
 ---
 
-## Requirements
+# ✅ Requirements
 
-Recommended operating system:
+Before running AlgoBench from source, install the following.
 
-```text
-Windows 10 / Windows 11
-```
+## 1. Python
 
-Recommended Python version:
+Recommended:
 
 ```text
 Python 3.11+
 ```
 
-The project was developed and tested using Python 3.14.
-
----
-
-## Software Required
-
-To run the project from source, install:
-
-- Python
-- Git
-- Visual Studio Code
-
-A web browser can be used to download these tools and access GitHub.
-
-A browser is not required to run AlgoBench itself.
-
-MySQL Workbench is not required because AlgoBench uses SQLite.
-
----
-
-## Installing Python
+The project was developed and tested using **Python 3.14**.
 
 Download Python from:
 
-[https://www.python.org/](https://www.python.org/)
+https://www.python.org/
 
 During installation, enable:
 
@@ -403,7 +493,7 @@ During installation, enable:
 Add Python to PATH
 ```
 
-Verify installation:
+Check installation:
 
 ```powershell
 python --version
@@ -411,13 +501,39 @@ python --version
 
 ---
 
-## Installing Git
+## 2. Visual Studio Code
 
-Download Git from:
+VS Code is recommended for development.
 
-[https://git-scm.com/](https://git-scm.com/)
+Download:
 
-Verify installation:
+https://code.visualstudio.com/
+
+Recommended extension:
+
+```text
+Python
+```
+
+VS Code is not required every time AlgoBench is launched.
+
+Once configured, the application can be started using:
+
+```text
+run_algobench.bat
+```
+
+---
+
+## 3. Git
+
+Git is required to clone or manage the repository.
+
+Download:
+
+https://git-scm.com/
+
+Check installation:
 
 ```powershell
 git --version
@@ -425,33 +541,45 @@ git --version
 
 ---
 
-## Installing Visual Studio Code
+## 4. Browser
 
-Download Visual Studio Code from:
+A browser is only required for downloading tools or accessing GitHub.
 
-[https://code.visualstudio.com/](https://code.visualstudio.com/)
+Examples:
 
-Recommended VS Code extension:
+- Google Chrome
+- Microsoft Edge
+- Mozilla Firefox
 
-```text
-Python
-```
-
-VS Code is only required for editing and developing the project.
-
-It is not required when running the packaged application.
+AlgoBench itself is a desktop application and does **not** run inside a browser.
 
 ---
 
-## Clone the Repository
+## 5. Database Software
 
-Open PowerShell or Command Prompt:
+No external database software is required.
+
+AlgoBench uses Python's built-in SQLite support.
+
+You do **not** need:
+
+- MySQL Server
+- MySQL Workbench
+- PostgreSQL
+- XAMPP
+- phpMyAdmin
+
+---
+
+# 📥 Installation
+
+## Step 1 — Clone the Repository
 
 ```powershell
-git clone https://github.com/tushar-011/<YOUR-REPOSITORY-NAME>.git
+git clone https://github.com/tushar-011/AlgoBench.git
 ```
 
-Enter the project folder:
+Open the project folder:
 
 ```powershell
 cd AlgoBench
@@ -459,9 +587,7 @@ cd AlgoBench
 
 ---
 
-## Create a Virtual Environment
-
-Create the virtual environment:
+## Step 2 — Create a Virtual Environment
 
 ```powershell
 python -m venv .venv
@@ -475,52 +601,61 @@ Activate it:
 
 ---
 
-## Install Dependencies
-
-If `requirements.txt` is available:
+## Step 3 — Install Dependencies
 
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
-Or install the main dependencies manually:
+If required, the main dependencies can also be installed manually:
 
 ```powershell
 python -m pip install customtkinter psutil matplotlib pyinstaller
 ```
 
-SQLite does not require separate installation because Python includes the `sqlite3` module.
+SQLite does not require a separate installation because Python includes the `sqlite3` module.
 
 ---
 
-## Run AlgoBench Using Python
+# ▶️ Running the Application
 
-Run:
-
-```powershell
-python main.py
-```
+AlgoBench can be started in two ways.
 
 ---
 
-## Run AlgoBench Using the BAT File
+## Method 1 — BAT Launcher
 
-AlgoBench includes:
+Recommended for demonstrations.
+
+Double-click:
 
 ```text
 run_algobench.bat
 ```
 
-Simply double-click the file.
+The launcher automatically:
 
-The BAT file automatically:
-
-1. Opens the project directory
-2. Checks for the virtual environment
-3. Runs AlgoBench using the virtual environment
+1. Moves to the AlgoBench project directory
+2. Checks for the local virtual environment
+3. Starts AlgoBench using the virtual environment
 4. Falls back to the system Python installation if required
 
-Example BAT file:
+You do **not** need to open VS Code every time.
+
+---
+
+# ▶️ Using the BAT Launcher
+
+Expected project structure:
+
+```text
+AlgoBench/
+├── main.py
+├── run_algobench.bat
+└── .venv/
+```
+
+Example launcher:
 
 ```bat
 @echo off
@@ -539,9 +674,15 @@ if errorlevel 1 (
 )
 ```
 
+To start the application, simply double-click:
+
+```text
+run_algobench.bat
+```
+
 ---
 
-## Build the Windows Application
+## Method 2 — Manual Run
 
 Activate the virtual environment:
 
@@ -549,7 +690,19 @@ Activate the virtual environment:
 .venv\Scripts\activate
 ```
 
-Build the application:
+Then run:
+
+```powershell
+python main.py
+```
+
+---
+
+# 📦 Building the EXE
+
+AlgoBench can also be converted into a Windows executable using PyInstaller.
+
+## Folder-based build
 
 ```powershell
 python -m PyInstaller --noconfirm --clean --windowed --name AlgoBench main.py
@@ -561,124 +714,143 @@ The application will be created inside:
 dist/AlgoBench/
 ```
 
-Run:
-
-```text
-AlgoBench.exe
-```
-
 ---
 
-## Build a Single EXE File
-
-You can also build a single executable:
+## Single-file build
 
 ```powershell
 python -m PyInstaller --noconfirm --clean --onefile --windowed --name AlgoBench main.py
 ```
 
-The final executable will be created inside:
-
-```text
-dist/
-```
-
-Example:
+The executable will be created as:
 
 ```text
 dist/AlgoBench.exe
 ```
 
----
-
-## Database
-
-AlgoBench uses SQLite to store:
-
-- Benchmark History
-- Application Settings
-
-The database is created automatically.
-
-No external database server is required.
-
-This means you do not need:
-
-- MySQL
-- MySQL Workbench
-- PostgreSQL
-- XAMPP
-- phpMyAdmin
+> The folder-based build is recommended first because it is easier to test and troubleshoot.
 
 ---
 
-## Offline Operation
-
-AlgoBench is designed to work completely offline.
-
-An internet connection is not required for:
-
-- CPU Testing
-- Memory Testing
-- Performance Comparison
-- Stress Testing
-- Complete Benchmark
-- Dashboard Monitoring
-- Test History
-- Settings
-
-Internet access is only needed when downloading dependencies or cloning the project.
-
----
-
-## User Interface
-
-AlgoBench includes a modern desktop interface with:
-
-- Sidebar navigation
-- Dashboard cards
-- Live graphs
-- Status badges
-- Light and Dark themes
-- Responsive panels
-- Benchmark result cards
-- Progress bars
-- Scrollable Settings and About sections
-
----
-
-## Benchmark Ratings
-
-Different benchmark modules generate internal scores and ratings.
-
-Possible ratings include:
+# 🧩 Major Application Modules
 
 ```text
-Excellent
-Very Good
-Good
-Average
-Basic
+Dashboard
+├── CPU usage
+├── Memory usage
+├── Battery status
+├── Storage usage
+├── Live performance graph
+└── System health
+
+System Overview
+├── Device information
+├── Operating system
+├── Processor information
+├── CPU cores
+├── CPU threads
+├── Memory
+├── Storage
+├── Battery
+└── Uptime
+
+CPU Test
+├── Light workload
+├── Medium workload
+├── Heavy workload
+├── CPU score
+├── Processing rate
+└── CPU utilization
+
+Memory Test
+├── Light workload
+├── Medium workload
+├── Heavy workload
+├── Memory score
+├── Peak memory
+└── Execution time
+
+Performance Comparison
+├── Bubble Sort
+├── Insertion Sort
+├── Merge Sort
+├── Quick Sort
+├── Execution-time comparison
+└── Fastest result
+
+Stress Test
+├── Light intensity
+├── Medium intensity
+├── Heavy intensity
+├── Live CPU monitoring
+├── Live memory monitoring
+├── Stability analysis
+└── Manual stop
+
+Complete System Test
+├── CPU benchmark
+├── Memory benchmark
+├── Processing comparison
+├── Stress benchmark
+├── Overall score
+├── Overall rating
+└── Reference comparison
+
+History
+├── Previous benchmark results
+├── Scores
+├── Ratings
+├── Date and time
+├── Refresh
+└── Clear history
+
+Settings
+├── Appearance
+├── Dashboard refresh rate
+├── History management
+└── Application information
 ```
-
-The scores are designed specifically for AlgoBench workloads.
-
-They should not be directly compared with scores from unrelated benchmarking applications.
 
 ---
 
-## Complete Benchmark Score
+# 📊 Benchmark Scoring
 
-The final system score is generated using:
+AlgoBench uses its own internal scoring system.
+
+## CPU Score
+
+The CPU test uses processing throughput to generate the score.
+
+The displayed score is limited to:
 
 ```text
-CPU Score            35%
-Memory Score         30%
-Performance Score    20%
-Stress Score         15%
+0 - 9999
 ```
 
-The maximum displayed score is:
+---
+
+## Complete System Score
+
+The Complete System Test combines multiple benchmark results.
+
+| Benchmark | Weight |
+|---|---:|
+| CPU Performance | 35% |
+| Memory Performance | 30% |
+| Processing Performance | 20% |
+| Stress Stability | 15% |
+
+Calculation:
+
+```text
+Overall Score =
+CPU Score × 0.35
++ Memory Score × 0.30
++ Performance Score × 0.20
++ Stress Score × 0.15
+```
+
+The final score is limited to:
 
 ```text
 9999
@@ -686,194 +858,234 @@ The maximum displayed score is:
 
 ---
 
-## Local Data
+## Overall Ratings
 
-AlgoBench stores its information locally.
+| Score | Rating |
+|---:|---|
+| 8000+ | Excellent |
+| 6500+ | Very Good |
+| 5000+ | Good |
+| 3500+ | Average |
+| Below 3500 | Basic |
 
-Data is not automatically uploaded to any online server.
-
-The application does not require a user account.
-
----
-
-## Current Project Status
-
-```text
-[✓] Dashboard
-[✓] Live CPU Monitoring
-[✓] Live Memory Monitoring
-[✓] Battery Monitoring
-[✓] Storage Monitoring
-[✓] System Overview
-[✓] CPU Benchmark
-[✓] Memory Benchmark
-[✓] Performance Comparison
-[✓] Stress Test
-[✓] Complete System Benchmark
-[✓] Reference Comparison
-[✓] Test History
-[✓] SQLite Integration
-[✓] Settings
-[✓] Light / Dark Theme
-[✓] Adjustable Dashboard Refresh Rate
-[✓] BAT Launcher
-[✓] Standalone EXE Support
-```
+> AlgoBench scores are specific to AlgoBench workloads and should not be directly compared with scores from unrelated benchmark applications.
 
 ---
 
-## Possible Future Improvements
+# 🗃️ Local Database
+
+AlgoBench uses SQLite for local application data.
+
+The database stores:
+
+- Benchmark history
+- Benchmark details
+- Application settings
+- Appearance preference
+- Dashboard refresh rate
+
+SQLite is embedded directly into Python through the `sqlite3` module.
+
+No database server needs to run in the background.
+
+---
+
+# 📴 Offline Operation
+
+AlgoBench is designed to work completely offline after the required Python dependencies are installed.
+
+Internet access is not required for:
+
+- Dashboard monitoring
+- System Overview
+- CPU Benchmark
+- Memory Benchmark
+- Performance Comparison
+- Stress Test
+- Complete System Test
+- History
+- Settings
+
+Internet access is only needed for tasks such as:
+
+- Downloading Python
+- Installing packages
+- Cloning the repository
+- Accessing GitHub
+
+---
+
+# 🧪 Testing
+
+Before submitting or demonstrating AlgoBench, test:
+
+- Application startup
+- BAT launcher
+- Dashboard live monitoring
+- CPU graph
+- Memory graph
+- System Overview
+- Processor detection
+- Light CPU test
+- Medium CPU test
+- Heavy CPU test
+- Memory benchmark
+- Performance comparison
+- Bubble Sort
+- Insertion Sort
+- Merge Sort
+- Quick Sort
+- Stress test
+- Manual stress-test stop
+- Complete System Test
+- Reference comparison
+- History saving
+- History refresh
+- Clear history
+- Light theme
+- Dark theme
+- System theme
+- Dashboard refresh-rate setting
+- Application restart
+- Settings persistence
+- PyInstaller build
+
+---
+
+# 🔮 Future Improvements
 
 Possible future additions include:
 
-- More benchmark workloads
-- Additional algorithm comparisons
-- Disk benchmark
+- Disk read/write benchmark
 - Network benchmark
-- Benchmark result export
-- CSV export
-- PDF report generation
-- Historical performance graphs
+- GPU benchmark
+- Historical performance charts
+- Export benchmark results to CSV
+- Export benchmark reports to PDF
 - Multiple reference systems
-- Real measured CPU reference database
-- Automatic hardware classification
-- More system sensors
+- Real measured processor reference database
+- Additional algorithms
+- Search and filtering in benchmark history
 - Benchmark presets
-- Additional customization options
+- Hardware classification
+- More system sensors
+- Application update checker
+- Installer / setup package
+- Benchmark result sharing
+
+These features are intentionally outside the current mini-project scope.
 
 ---
 
-## Important Benchmark Note
+# 🌐 GitHub Setup
 
-AlgoBench uses its own workloads and scoring formulas.
-
-The generated score should be treated as an AlgoBench-specific performance measurement.
-
-The reference comparison currently uses an internal high-end reference score.
-
-It should not be interpreted as a direct comparison against Cinebench, Geekbench, PassMark, or another independent benchmark platform.
-
----
-
-## Troubleshooting
-
-### Python command is not recognized
-
-Reinstall Python and make sure:
-
-```text
-Add Python to PATH
-```
-
-is enabled.
-
----
-
-### Module not found
-
-Activate the virtual environment:
-
-```powershell
-.venv\Scripts\activate
-```
-
-Then install dependencies:
-
-```powershell
-python -m pip install -r requirements.txt
-```
-
----
-
-### Application does not start from BAT file
-
-Try:
-
-```powershell
-python main.py
-```
-
-Check the terminal for the error message.
-
----
-
-### PyInstaller command is not recognized
-
-Use:
-
-```powershell
-python -m PyInstaller
-```
-
-instead of:
-
-```powershell
-pyinstaller
-```
-
----
-
-## Git Workflow
-
-Check changes:
+Useful Git commands:
 
 ```powershell
 git status
+git add .
+git commit -m "Your commit message"
+git push
 ```
 
-Stage files:
+For a final project commit:
 
 ```powershell
 git add .
-```
-
-Commit:
-
-```powershell
-git commit -m "Update AlgoBench"
-```
-
-Push:
-
-```powershell
+git commit -m "Finalize AlgoBench mini project"
 git push
 ```
 
 ---
 
-## Author
+# 🏁 Project Status
 
-**Name:** Tushar Thakur  
-**Course / Program:** MCA Data Science  
+### ✅ Mini-project feature development complete
+
+AlgoBench currently includes the major features required to demonstrate:
+
+- Data Structures and Algorithms
+- Sorting algorithms
+- Runtime comparison
+- Workload scaling
+- System monitoring
+- CPU benchmarking
+- Memory benchmarking
+- Stress testing
+- Desktop GUI development
+- Multithreading
+- Local database storage
+- Persistent settings
+- Benchmark scoring
+- Windows application packaging
+
+The project is now primarily in its **testing, documentation, demonstration, and submission stage**.
+
+---
+
+# 👨‍💻 Development Notes
+
+AlgoBench was created as an academic mini-project with emphasis on **Data Structures and Algorithms** and practical desktop application development.
+
+The application is intended for learning, experimentation, demonstration, and academic submission rather than professional hardware certification.
+
+Benchmark results can vary depending on:
+
+- Background applications
+- Power mode
+- CPU temperature
+- Available memory
+- Operating-system activity
+- Laptop charging state
+- Hardware configuration
+
+For more consistent results, close unnecessary applications before running benchmarks.
+
+---
+
+# ⚙️ AlgoBench
+
+**Benchmarking • Monitoring • Algorithms • Stress Testing • System Analysis**
+
+Built with **Python + CustomTkinter + psutil + Matplotlib + SQLite**
+
+---
+
+# 👨‍💻 Author
+
+### Tushar Thakur
+
+**MCA Data Science**  
+**Chandigarh University**
+
+[![GitHub](https://img.shields.io/badge/GitHub-tushar--011-181717?logo=github)](https://github.com/tushar-011)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Tushar%20Thakur-0A66C2?logo=linkedin)](https://www.linkedin.com/in/tushar-thakur-8848a7396)
+[![Email](https://img.shields.io/badge/Email-artificial.thakur%40gmail.com-EA4335?logo=gmail)](mailto:artificial.thakur@gmail.com)
+
+---
+
+## 🎓 Academic Information
+
+**Project:** AlgoBench  
+**Project Type:** Mini Project  
+**Domain:** Data Structures and Algorithms / System Benchmarking  
+**Course:** MCA Data Science  
 **University:** Chandigarh University  
-**GitHub:** [github.com/tushar-011](https://github.com/tushar-011)  
-**LinkedIn:** [linkedin.com/in/tushar-thakur-8848a7396](https://www.linkedin.com/in/tushar-thakur-8848a7396)  
-**Email:** [artificial.thakur@gmail.com](mailto:artificial.thakur@gmail.com)
+**Platform:** Windows Desktop  
+**Language:** Python  
+**Database:** SQLite  
 
 ---
 
-## Project Information
+## 📜 Disclaimer
 
-**Project Name:** AlgoBench
-**Project Type:** Mini Project
-**Category:** System Performance Benchmarking
-**Platform:** Windows Desktop
-**Language:** Python
-**Database:** SQLite
-**Interface:** CustomTkinter
+AlgoBench uses custom workloads and custom scoring formulas created specifically for this project.
+
+The generated scores are intended for educational comparison inside AlgoBench and should not be treated as official hardware certification or as directly equivalent to third-party benchmark scores.
 
 ---
-
-## License
-
-This project was developed for educational and academic purposes.
-
-You may modify and extend the project for learning, experimentation, and academic use.
-
----
-
 
 <p align="center">
-  <b>AlgoBench</b><br>
+  <b>⚙️ AlgoBench</b><br>
   System Performance Benchmarking Made Simple
 </p>
