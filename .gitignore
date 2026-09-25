@@ -1,0 +1,24 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
