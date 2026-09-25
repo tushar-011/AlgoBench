@@ -1,6 +1,8 @@
-import psutil
 import platform
 import socket
+import time
+
+import psutil
 
 
 def get_cpu_usage():
@@ -40,17 +42,40 @@ def get_disk_usage():
     return {
         "percent": disk.percent,
         "used_gb": round(disk.used / (1024 ** 3), 1),
-        "total_gb": round(disk.total / (1024 ** 3), 1)
+        "total_gb": round(disk.total / (1024 ** 3), 1),
+        "free_gb": round(disk.free / (1024 ** 3), 1)
     }
 
 
 def get_system_info():
+    processor = platform.processor()
+
+    if not processor:
+        processor = "Processor information unavailable"
+
     return {
-        "os": platform.system(),
-        "os_version": platform.version(),
-        "processor": platform.processor(),
+        "device_name": socket.gethostname(),
+        "os": f"{platform.system()} {platform.release()}",
+        "processor": processor,
         "architecture": platform.machine(),
-        "hostname": socket.gethostname(),
-        "cpu_cores": psutil.cpu_count(logical=False),
-        "cpu_threads": psutil.cpu_count(logical=True)
+        "physical_cores": psutil.cpu_count(logical=False),
+        "threads": psutil.cpu_count(logical=True)
     }
+
+
+def get_system_uptime():
+    boot_time = psutil.boot_time()
+
+    uptime_seconds = int(time.time() - boot_time)
+
+    days = uptime_seconds // 86400
+    hours = (uptime_seconds % 86400) // 3600
+    minutes = (uptime_seconds % 3600) // 60
+
+    if days > 0:
+        return f"{days}d {hours}h {minutes}m"
+
+    if hours > 0:
+        return f"{hours}h {minutes}m"
+
+    return f"{minutes}m"
