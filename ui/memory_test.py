@@ -2,9 +2,8 @@ import threading
 
 import customtkinter as ctk
 
-from tests.memory_benchmark import (
-    run_memory_benchmark
-)
+from tests.memory_benchmark import run_memory_benchmark
+from database.db import save_test_result
 
 
 class MemoryTestPage(ctk.CTkFrame):
@@ -98,16 +97,14 @@ class MemoryTestPage(ctk.CTkFrame):
             pady=(5, 5)
         )
 
-        self.workload_option = (
-            ctk.CTkOptionMenu(
-                panel,
-                values=[
-                    "Light",
-                    "Medium",
-                    "Heavy"
-                ],
-                command=self.update_workload_info
-            )
+        self.workload_option = ctk.CTkOptionMenu(
+            panel,
+            values=[
+                "Light",
+                "Medium",
+                "Heavy"
+            ],
+            command=self.update_workload_info
         )
 
         self.workload_option.set(
@@ -136,13 +133,11 @@ class MemoryTestPage(ctk.CTkFrame):
             pady=(0, 20)
         )
 
-        self.start_button = (
-            ctk.CTkButton(
-                panel,
-                text="Start Memory Test",
-                height=45,
-                command=self.start_test
-            )
+        self.start_button = ctk.CTkButton(
+            panel,
+            text="Start Memory Test",
+            height=45,
+            command=self.start_test
         )
 
         self.start_button.pack(
@@ -259,10 +254,7 @@ class MemoryTestPage(ctk.CTkFrame):
             pady=4
         )
 
-    def update_workload_info(
-        self,
-        workload
-    ):
+    def update_workload_info(self, workload):
 
         descriptions = {
             "Light": (
@@ -282,9 +274,7 @@ class MemoryTestPage(ctk.CTkFrame):
         }
 
         self.workload_info.configure(
-            text=descriptions[
-                workload
-            ]
+            text=descriptions[workload]
         )
 
     def start_test(self):
@@ -305,9 +295,7 @@ class MemoryTestPage(ctk.CTkFrame):
             text="Please wait"
         )
 
-        workload = (
-            self.workload_option.get()
-        )
+        workload = self.workload_option.get()
 
         thread = threading.Thread(
             target=self.run_test,
@@ -317,10 +305,7 @@ class MemoryTestPage(ctk.CTkFrame):
 
         thread.start()
 
-    def run_test(
-        self,
-        workload
-    ):
+    def run_test(self, workload):
 
         try:
 
@@ -330,8 +315,7 @@ class MemoryTestPage(ctk.CTkFrame):
 
             self.after(
                 0,
-                lambda:
-                self.display_result(
+                lambda: self.display_result(
                     result
                 )
             )
@@ -340,16 +324,12 @@ class MemoryTestPage(ctk.CTkFrame):
 
             self.after(
                 0,
-                lambda:
-                self.show_error(
+                lambda: self.show_error(
                     str(error)
                 )
             )
 
-    def display_result(
-        self,
-        result
-    ):
+    def display_result(self, result):
 
         self.status_label.configure(
             text=(
@@ -396,14 +376,19 @@ class MemoryTestPage(ctk.CTkFrame):
             )
         )
 
+        save_test_result(
+            test_type="Memory Performance",
+            mode=result["workload"],
+            score=result["score"],
+            result=result["rating"],
+            details=result
+        )
+
         self.start_button.configure(
             state="normal"
         )
 
-    def show_error(
-        self,
-        error
-    ):
+    def show_error(self, error):
 
         self.status_label.configure(
             text="Test failed"

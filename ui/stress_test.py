@@ -6,6 +6,8 @@ from tests.stress_benchmark import (
     run_stress_test
 )
 
+from database.db import save_test_result
+
 
 class StressTestPage(ctk.CTkFrame):
 
@@ -354,9 +356,7 @@ class StressTestPage(ctk.CTkFrame):
         }
 
         self.info_label.configure(
-            text=descriptions[
-                intensity
-            ]
+            text=descriptions[intensity]
         )
 
     def start_test(self):
@@ -580,6 +580,15 @@ class StressTestPage(ctk.CTkFrame):
                 f"{result['stability']}"
             )
         )
+
+        if not result["stopped"]:
+
+            save_test_result(
+                test_type="System Stress Test",
+                mode=result["intensity"],
+                result=result["stability"],
+                details=result
+            )
 
     def show_error(
         self,

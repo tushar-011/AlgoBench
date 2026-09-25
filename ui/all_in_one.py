@@ -6,6 +6,8 @@ from tests.all_in_one_benchmark import (
     run_all_in_one_benchmark
 )
 
+from database.db import save_test_result
+
 
 DISPLAY_NAMES = {
     "Bubble Sort": "Basic Data Processing (Bubble Sort)",
@@ -309,12 +311,15 @@ class AllInOnePage(ctk.CTkFrame):
         try:
 
             results = run_all_in_one_benchmark(
-                progress_callback=self.progress_update
+                progress_callback=(
+                    self.progress_update
+                )
             )
 
             self.after(
                 0,
-                lambda: self.display_results(
+                lambda:
+                self.display_results(
                     results
                 )
             )
@@ -323,7 +328,8 @@ class AllInOnePage(ctk.CTkFrame):
 
             self.after(
                 0,
-                lambda: self.show_error(
+                lambda:
+                self.show_error(
                     str(error)
                 )
             )
@@ -336,7 +342,8 @@ class AllInOnePage(ctk.CTkFrame):
 
         self.after(
             0,
-            lambda: self.update_progress_ui(
+            lambda:
+            self.update_progress_ui(
                 stage,
                 progress
             )
@@ -375,12 +382,16 @@ class AllInOnePage(ctk.CTkFrame):
 
         self.score_label.configure(
             text=str(
-                results["overall_score"]
+                results[
+                    "overall_score"
+                ]
             )
         )
 
         self.rating_label.configure(
-            text=results["rating"]
+            text=results[
+                "rating"
+            ]
         )
 
         self.cpu_label.configure(
@@ -424,6 +435,18 @@ class AllInOnePage(ctk.CTkFrame):
                 "System Stability: "
                 f"{results['stress']['stability']}"
             )
+        )
+
+        save_test_result(
+            test_type="Complete System Test",
+            mode="Standard",
+            score=results[
+                "overall_score"
+            ],
+            result=results[
+                "rating"
+            ],
+            details=results
         )
 
     def show_error(

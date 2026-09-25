@@ -1,8 +1,10 @@
+import queue
 import threading
 
 import customtkinter as ctk
 
 from tests.cpu_benchmark import run_cpu_benchmark
+from database.db import save_test_result
 
 
 class CPUTestPage(ctk.CTkFrame):
@@ -14,6 +16,8 @@ class CPUTestPage(ctk.CTkFrame):
             (0, 1),
             weight=1
         )
+
+        self.result_queue = queue.Queue()
 
         self.create_header()
         self.create_test_panel()
@@ -305,6 +309,26 @@ class CPUTestPage(ctk.CTkFrame):
             text="Please wait"
         )
 
+        self.time_label.configure(
+            text="Processing Time: --"
+        )
+
+        self.work_label.configure(
+            text="Work Completed: --"
+        )
+
+        self.rate_label.configure(
+            text="Processing Rate: --"
+        )
+
+        self.cpu_label.configure(
+            text="Peak CPU Usage: --"
+        )
+
+        self.average_cpu_label.configure(
+            text="Average CPU Usage: --"
+        )
+
         workload = self.workload_option.get()
 
         thread = threading.Thread(
@@ -315,6 +339,11 @@ class CPUTestPage(ctk.CTkFrame):
 
         thread.start()
 
+        self.after(
+            100,
+            self.check_result_queue
+        )
+
     def run_test(self, workload):
 
         try:
@@ -323,27 +352,57 @@ class CPUTestPage(ctk.CTkFrame):
                 workload
             )
 
-            self.after(
-                0,
-                lambda: self.display_result(
+            self.result_queue.put(
+                (
+                    "success",
                     result
                 )
             )
 
         except Exception as error:
 
-            self.after(
-                0,
-                lambda: self.show_error(
+            self.result_queue.put(
+                (
+                    "error",
                     str(error)
                 )
+            )
+
+    def check_result_queue(self):
+
+        try:
+
+            result_type, data = (
+                self.result_queue.get_nowait()
+            )
+
+        except queue.Empty:
+
+            self.after(
+                100,
+                self.check_result_queue
+            )
+
+            return
+
+        if result_type == "success":
+
+            self.display_result(
+                data
+            )
+
+        else:
+
+            self.show_error(
+                data
             )
 
     def display_result(self, result):
 
         self.status_label.configure(
             text=(
-                f"{result['workload']} test completed"
+                f"{result['workload']} "
+                "test completed"
             )
         )
 
@@ -392,11 +451,31 @@ class CPUTestPage(ctk.CTkFrame):
             )
         )
 
+        try:
+
+            save_test_result(
+                test_type="CPU Performance",
+                mode=result["workload"],
+                score=result["score"],
+                result=result["rating"],
+                details=result
+            )
+
+        except Exception as error:
+
+            print(
+                f"CPU history save error: {error}"
+            )
+
         self.start_button.configure(
             state="normal"
         )
 
     def show_error(self, error):
+
+        print(
+            f"CPU test error: {error}"
+        )
 
         self.status_label.configure(
             text="Test failed"

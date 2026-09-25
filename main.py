@@ -10,7 +10,7 @@ from ui.stress_test import StressTestPage
 from ui.all_in_one import AllInOnePage
 from ui.history import HistoryPage
 from ui.settings import SettingsPage
-
+from database.db import initialize_database
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -116,6 +116,8 @@ class AlgoBenchApp(ctk.CTk):
 
 
 if __name__ == "__main__":
+
+    initialize_database()
 
     app = AlgoBenchApp()
     app.mainloop()

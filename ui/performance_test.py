@@ -6,6 +6,8 @@ from tests.performance_benchmark import (
     run_performance_benchmark
 )
 
+from database.db import save_test_result
+
 
 DISPLAY_NAMES = {
     "Bubble Sort": "Basic Data Processing (Bubble Sort)",
@@ -15,17 +17,10 @@ DISPLAY_NAMES = {
 }
 
 
-class PerformanceTestPage(
-    ctk.CTkFrame
-):
+class PerformanceTestPage(ctk.CTkFrame):
 
-    def __init__(
-        self,
-        parent
-    ):
-        super().__init__(
-            parent
-        )
+    def __init__(self, parent):
+        super().__init__(parent)
 
         self.grid_columnconfigure(
             (0, 1),
@@ -113,16 +108,14 @@ class PerformanceTestPage(
             pady=(5, 5)
         )
 
-        self.workload_option = (
-            ctk.CTkOptionMenu(
-                panel,
-                values=[
-                    "Light",
-                    "Medium",
-                    "Heavy"
-                ],
-                command=self.update_workload_info
-            )
+        self.workload_option = ctk.CTkOptionMenu(
+            panel,
+            values=[
+                "Light",
+                "Medium",
+                "Heavy"
+            ],
+            command=self.update_workload_info
         )
 
         self.workload_option.set(
@@ -135,16 +128,14 @@ class PerformanceTestPage(
             pady=(0, 15)
         )
 
-        self.workload_info = (
-            ctk.CTkLabel(
-                panel,
-                text=(
-                    "Standard comparison\n"
-                    "3,000 items"
-                ),
-                text_color="gray",
-                justify="left"
-            )
+        self.workload_info = ctk.CTkLabel(
+            panel,
+            text=(
+                "Standard comparison\n"
+                "3,000 items"
+            ),
+            text_color="gray",
+            justify="left"
         )
 
         self.workload_info.pack(
@@ -153,13 +144,11 @@ class PerformanceTestPage(
             pady=(0, 20)
         )
 
-        self.start_button = (
-            ctk.CTkButton(
-                panel,
-                text="Start Performance Test",
-                height=45,
-                command=self.start_test
-            )
+        self.start_button = ctk.CTkButton(
+            panel,
+            text="Start Performance Test",
+            height=45,
+            command=self.start_test
         )
 
         self.start_button.pack(
@@ -168,9 +157,7 @@ class PerformanceTestPage(
             pady=(5, 25)
         )
 
-    def create_results_panel(
-        self
-    ):
+    def create_results_panel(self):
 
         panel = ctk.CTkFrame(
             self,
@@ -200,12 +187,10 @@ class PerformanceTestPage(
             pady=(25, 15)
         )
 
-        self.status_label = (
-            ctk.CTkLabel(
-                panel,
-                text="Ready to test",
-                text_color="gray"
-            )
+        self.status_label = ctk.CTkLabel(
+            panel,
+            text="Ready to test",
+            text_color="gray"
         )
 
         self.status_label.pack(
@@ -214,7 +199,9 @@ class PerformanceTestPage(
 
         self.result_labels = {}
 
-        for algorithm_name, display_name in DISPLAY_NAMES.items():
+        for algorithm_name, display_name in (
+            DISPLAY_NAMES.items()
+        ):
 
             frame = ctk.CTkFrame(
                 panel
@@ -226,12 +213,10 @@ class PerformanceTestPage(
                 pady=5
             )
 
-            name_label = (
-                ctk.CTkLabel(
-                    frame,
-                    text=display_name,
-                    anchor="w"
-                )
+            name_label = ctk.CTkLabel(
+                frame,
+                text=display_name,
+                anchor="w"
             )
 
             name_label.pack(
@@ -240,12 +225,10 @@ class PerformanceTestPage(
                 pady=12
             )
 
-            result_label = (
-                ctk.CTkLabel(
-                    frame,
-                    text="--",
-                    anchor="e"
-                )
+            result_label = ctk.CTkLabel(
+                frame,
+                text="--",
+                anchor="e"
             )
 
             result_label.pack(
@@ -257,15 +240,15 @@ class PerformanceTestPage(
                 algorithm_name
             ] = result_label
 
-        self.fastest_label = (
-            ctk.CTkLabel(
-                panel,
-                text="Best Performance: --",
-                font=ctk.CTkFont(
-                    size=17,
-                    weight="bold"
-                )
-            )
+        self.fastest_label = ctk.CTkLabel(
+            panel,
+            text="Best Performance: --",
+            font=ctk.CTkFont(
+                size=17,
+                weight="bold"
+            ),
+            wraplength=350,
+            justify="center"
         )
 
         self.fastest_label.pack(
@@ -295,9 +278,7 @@ class PerformanceTestPage(
         }
 
         self.workload_info.configure(
-            text=descriptions[
-                workload
-            ]
+            text=descriptions[workload]
         )
 
     def start_test(self):
@@ -322,9 +303,7 @@ class PerformanceTestPage(
                 text="--"
             )
 
-        workload = (
-            self.workload_option.get()
-        )
+        workload = self.workload_option.get()
 
         thread = threading.Thread(
             target=self.run_test,
@@ -349,8 +328,7 @@ class PerformanceTestPage(
 
             self.after(
                 0,
-                lambda:
-                self.display_results(
+                lambda: self.display_results(
                     result
                 )
             )
@@ -359,8 +337,7 @@ class PerformanceTestPage(
 
             self.after(
                 0,
-                lambda:
-                self.show_error(
+                lambda: self.show_error(
                     str(error)
                 )
             )
@@ -393,11 +370,23 @@ class PerformanceTestPage(
 
         fastest = results[0]
 
+        fastest_name = DISPLAY_NAMES.get(
+            fastest["name"],
+            fastest["name"]
+        )
+
         self.fastest_label.configure(
             text=(
                 "Best Performance: "
-                f"{DISPLAY_NAMES[fastest['name']]}"
+                f"{fastest_name}"
             )
+        )
+
+        save_test_result(
+            test_type="Performance Comparison",
+            mode=result["workload"],
+            result=fastest_name,
+            details=result
         )
 
         self.start_button.configure(
