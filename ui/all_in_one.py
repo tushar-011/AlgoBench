@@ -62,7 +62,8 @@ class AllInOnePage(ctk.CTkFrame):
             title="Complete System Test",
             subtitle=(
                 "Run a complete benchmark sequence "
-                "and receive one overall system score."
+                "and compare your final score with a "
+                "high-end reference system."
             )
         )
 
@@ -183,6 +184,45 @@ class AllInOnePage(ctk.CTkFrame):
             text=(
                 "Uses standard workloads for each test "
                 "and combines the results into one score."
+            ),
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"],
+            wraplength=430,
+            justify="left"
+        ).pack(
+            anchor="w",
+            padx=16,
+            pady=(0, 13)
+        )
+
+        reference_info = ctk.CTkFrame(
+            panel,
+            fg_color=COLORS["accent_soft"],
+            corner_radius=10
+        )
+
+        reference_info.pack(
+            fill="x",
+            padx=24,
+            pady=(0, 18)
+        )
+
+        ctk.CTkLabel(
+            reference_info,
+            text="Reference Comparison",
+            font=FONTS["body_bold"],
+            text_color=COLORS["text"]
+        ).pack(
+            anchor="w",
+            padx=16,
+            pady=(13, 3)
+        )
+
+        ctk.CTkLabel(
+            reference_info,
+            text=(
+                "After testing, your score will be compared "
+                "with a fixed high-end AlgoBench reference score."
             ),
             font=FONTS["small"],
             text_color=COLORS["text_secondary"],
@@ -435,6 +475,10 @@ class AllInOnePage(ctk.CTkFrame):
             "System Stability"
         )
 
+        self.create_reference_section(
+            panel
+        )
+
     def create_result_row(
         self,
         parent,
@@ -479,6 +523,151 @@ class AllInOnePage(ctk.CTkFrame):
         )
 
         return value
+
+    def create_reference_section(self, parent):
+
+        reference_card = ctk.CTkFrame(
+            parent,
+            fg_color=COLORS["accent_soft"],
+            corner_radius=12
+        )
+
+        reference_card.pack(
+            fill="x",
+            padx=24,
+            pady=(4, 24)
+        )
+
+        heading_frame = ctk.CTkFrame(
+            reference_card,
+            fg_color="transparent"
+        )
+
+        heading_frame.pack(
+            fill="x",
+            padx=16,
+            pady=(14, 10)
+        )
+
+        ctk.CTkLabel(
+            heading_frame,
+            text="Reference Comparison",
+            font=FONTS["body_bold"],
+            text_color=COLORS["text"]
+        ).pack(
+            side="left"
+        )
+
+        self.reference_percent_label = ctk.CTkLabel(
+            heading_frame,
+            text="--",
+            font=("Segoe UI", 16, "bold"),
+            text_color=COLORS["accent"]
+        )
+
+        self.reference_percent_label.pack(
+            side="right"
+        )
+
+        self.create_reference_bar(
+            reference_card,
+            "Your AlgoBench Score",
+            "user"
+        )
+
+        self.create_reference_bar(
+            reference_card,
+            "High-End Reference",
+            "reference"
+        )
+
+        self.reference_summary = ctk.CTkLabel(
+            reference_card,
+            text="Run the complete test to view comparison.",
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"],
+            wraplength=420,
+            justify="center"
+        )
+
+        self.reference_summary.pack(
+            padx=16,
+            pady=(4, 14)
+        )
+
+    def create_reference_bar(
+        self,
+        parent,
+        title,
+        key
+    ):
+
+        row = ctk.CTkFrame(
+            parent,
+            fg_color="transparent"
+        )
+
+        row.pack(
+            fill="x",
+            padx=16,
+            pady=5
+        )
+
+        header = ctk.CTkFrame(
+            row,
+            fg_color="transparent"
+        )
+
+        header.pack(
+            fill="x"
+        )
+
+        ctk.CTkLabel(
+            header,
+            text=title,
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
+        ).pack(
+            side="left"
+        )
+
+        value_label = ctk.CTkLabel(
+            header,
+            text="--",
+            font=FONTS["body_bold"],
+            text_color=COLORS["text"]
+        )
+
+        value_label.pack(
+            side="right"
+        )
+
+        progress = ctk.CTkProgressBar(
+            row,
+            height=9,
+            corner_radius=5,
+            fg_color=COLORS["border"],
+            progress_color=COLORS["accent"]
+        )
+
+        progress.pack(
+            fill="x",
+            pady=(5, 2)
+        )
+
+        progress.set(
+            0
+        )
+
+        if key == "user":
+
+            self.user_reference_score = value_label
+            self.user_reference_bar = progress
+
+        else:
+
+            self.reference_score_label = value_label
+            self.reference_bar = progress
 
     def start_test(self):
 
@@ -532,12 +721,40 @@ class AllInOnePage(ctk.CTkFrame):
             text="--"
         )
 
+        self.reset_reference_section()
+
         thread = threading.Thread(
             target=self.run_test,
             daemon=True
         )
 
         thread.start()
+
+    def reset_reference_section(self):
+
+        self.reference_percent_label.configure(
+            text="--"
+        )
+
+        self.user_reference_score.configure(
+            text="--"
+        )
+
+        self.reference_score_label.configure(
+            text="--"
+        )
+
+        self.user_reference_bar.set(
+            0
+        )
+
+        self.reference_bar.set(
+            0
+        )
+
+        self.reference_summary.configure(
+            text="Calculating reference comparison..."
+        )
 
     def run_test(self):
 
@@ -623,8 +840,12 @@ class AllInOnePage(ctk.CTkFrame):
             text="100%"
         )
 
+        overall_score = results[
+            "overall_score"
+        ]
+
         self.score_label.configure(
-            text=f"{results['overall_score']:,}"
+            text=f"{overall_score:,}"
         )
 
         self.rating_label.configure(
@@ -660,12 +881,16 @@ class AllInOnePage(ctk.CTkFrame):
             text=results["stress"]["stability"]
         )
 
+        self.display_reference_comparison(
+            results
+        )
+
         try:
 
             save_test_result(
                 test_type="Complete System Test",
                 mode="Standard",
-                score=results["overall_score"],
+                score=overall_score,
                 result=results["rating"],
                 details=results
             )
@@ -676,6 +901,109 @@ class AllInOnePage(ctk.CTkFrame):
                 "Complete test history save error: "
                 f"{error}"
             )
+
+    def display_reference_comparison(
+        self,
+        results
+    ):
+
+        reference = results.get(
+            "reference"
+        )
+
+        if not reference:
+
+            self.reference_summary.configure(
+                text="Reference comparison unavailable."
+            )
+
+            return
+
+        user_score = results[
+            "overall_score"
+        ]
+
+        reference_score = reference[
+            "score"
+        ]
+
+        relative_percent = reference[
+            "relative_percent"
+        ]
+
+        reference_name = reference[
+            "name"
+        ]
+
+        self.reference_percent_label.configure(
+            text=f"{relative_percent:.1f}%"
+        )
+
+        self.user_reference_score.configure(
+            text=f"{user_score:,}"
+        )
+
+        self.reference_score_label.configure(
+            text=f"{reference_score:,}"
+        )
+
+        highest_score = max(
+            user_score,
+            reference_score,
+            1
+        )
+
+        user_bar_value = min(
+            user_score / highest_score,
+            1
+        )
+
+        reference_bar_value = min(
+            reference_score / highest_score,
+            1
+        )
+
+        self.user_reference_bar.set(
+            user_bar_value
+        )
+
+        self.reference_bar.set(
+            reference_bar_value
+        )
+
+        if relative_percent >= 100:
+
+            summary = (
+                "Your system reached or exceeded "
+                f"the {reference_name} score."
+            )
+
+        elif relative_percent >= 80:
+
+            summary = (
+                "Your system is relatively close to "
+                f"the {reference_name} score."
+            )
+
+        elif relative_percent >= 60:
+
+            summary = (
+                "Your system achieved "
+                f"{relative_percent:.1f}% of the "
+                f"{reference_name} score."
+            )
+
+        else:
+
+            summary = (
+                "Your system achieved "
+                f"{relative_percent:.1f}% of the "
+                f"{reference_name} score."
+            )
+
+        self.reference_summary.configure(
+            text=summary
+        )
 
     def show_error(
         self,
@@ -711,4 +1039,8 @@ class AllInOnePage(ctk.CTkFrame):
 
         self.rating_label.configure(
             text="Test Failed"
+        )
+
+        self.reference_summary.configure(
+            text="Reference comparison unavailable."
         )

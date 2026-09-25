@@ -6,6 +6,12 @@ from tests.performance_benchmark import run_performance_benchmark
 from tests.stress_benchmark import run_stress_test
 
 
+REFERENCE_SYSTEM = {
+    "name": "High-End Reference",
+    "score": 8500
+}
+
+
 def run_all_in_one_benchmark(
     progress_callback=None
 ):
@@ -85,11 +91,21 @@ def run_all_in_one_benchmark(
         overall_score
     )
 
+    reference_result = (
+        calculate_reference_comparison(
+            overall_score
+        )
+    )
+
     results["overall_score"] = (
         overall_score
     )
 
     results["rating"] = rating
+
+    results["reference"] = (
+        reference_result
+    )
 
     if progress_callback:
         progress_callback(
@@ -194,6 +210,43 @@ def calculate_stress_score(
         stability,
         5000
     )
+
+
+def calculate_reference_comparison(
+    user_score
+):
+
+    reference_score = (
+        REFERENCE_SYSTEM["score"]
+    )
+
+    if reference_score <= 0:
+
+        relative_percent = 0
+
+    else:
+
+        relative_percent = (
+            user_score
+            / reference_score
+        ) * 100
+
+    relative_percent = round(
+        relative_percent,
+        1
+    )
+
+    return {
+        "name": REFERENCE_SYSTEM[
+            "name"
+        ],
+
+        "score": reference_score,
+
+        "relative_percent": (
+            relative_percent
+        )
+    }
 
 
 def get_overall_rating(
