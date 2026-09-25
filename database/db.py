@@ -18,7 +18,6 @@ def get_connection():
 def initialize_database():
 
     connection = get_connection()
-
     cursor = connection.cursor()
 
     cursor.execute(
@@ -38,6 +37,47 @@ def initialize_database():
     connection.commit()
     connection.close()
 
+    initialize_settings()
+
+
+def initialize_settings():
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS app_settings (
+            setting_key TEXT PRIMARY KEY,
+            setting_value TEXT NOT NULL
+        )
+        """
+    )
+
+    default_settings = {
+        "appearance": "Dark",
+        "refresh_rate": "1"
+    }
+
+    for key, value in default_settings.items():
+
+        cursor.execute(
+            """
+            INSERT OR IGNORE INTO app_settings (
+                setting_key,
+                setting_value
+            )
+            VALUES (?, ?)
+            """,
+            (
+                key,
+                value
+            )
+        )
+
+    connection.commit()
+    connection.close()
+
 
 def save_test_result(
     test_type,
@@ -48,7 +88,6 @@ def save_test_result(
 ):
 
     connection = get_connection()
-
     cursor = connection.cursor()
 
     details_json = json.dumps(
@@ -82,7 +121,6 @@ def save_test_result(
 def get_test_history():
 
     connection = get_connection()
-
     cursor = connection.cursor()
 
     cursor.execute(
@@ -109,7 +147,6 @@ def get_test_history():
 def clear_test_history():
 
     connection = get_connection()
-
     cursor = connection.cursor()
 
     cursor.execute(
@@ -120,3 +157,62 @@ def clear_test_history():
 
     connection.commit()
     connection.close()
+
+
+def save_setting(
+    key,
+    value
+):
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        INSERT INTO app_settings (
+            setting_key,
+            setting_value
+        )
+        VALUES (?, ?)
+
+        ON CONFLICT(setting_key)
+        DO UPDATE SET
+            setting_value = excluded.setting_value
+        """,
+        (
+            key,
+            str(value)
+        )
+    )
+
+    connection.commit()
+    connection.close()
+
+
+def get_setting(
+    key,
+    default=None
+):
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        SELECT setting_value
+        FROM app_settings
+        WHERE setting_key = ?
+        """,
+        (
+            key,
+        )
+    )
+
+    row = cursor.fetchone()
+
+    connection.close()
+
+    if row:
+        return row[0]
+
+    return default

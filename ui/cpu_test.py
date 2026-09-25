@@ -6,14 +6,36 @@ import customtkinter as ctk
 from tests.cpu_benchmark import run_cpu_benchmark
 from database.db import save_test_result
 
+from ui.theme import (
+    COLORS,
+    FONTS,
+    SPACING
+)
+
+from ui.components import (
+    PageHeader,
+    Card,
+    StatusBadge,
+    PrimaryButton
+)
+
 
 class CPUTestPage(ctk.CTkFrame):
 
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__(
+            parent,
+            fg_color=COLORS["app_bg"]
+        )
 
         self.grid_columnconfigure(
             (0, 1),
+            weight=1,
+            uniform="cpu_columns"
+        )
+
+        self.grid_rowconfigure(
+            1,
             weight=1
         )
 
@@ -25,81 +47,85 @@ class CPUTestPage(ctk.CTkFrame):
 
     def create_header(self):
 
-        title = ctk.CTkLabel(
+        header = PageHeader(
             self,
-            text="CPU Performance Test",
-            font=ctk.CTkFont(
-                size=30,
-                weight="bold"
+            title="CPU Performance Test",
+            subtitle=(
+                "Evaluate processor performance "
+                "under controlled processing workloads."
             )
         )
 
-        title.grid(
+        header.grid(
             row=0,
             column=0,
             columnspan=2,
-            sticky="w",
-            padx=30,
-            pady=(30, 5)
-        )
-
-        subtitle = ctk.CTkLabel(
-            self,
-            text=(
-                "Measure how quickly your system "
-                "handles different processing workloads."
-            ),
-            text_color="gray"
-        )
-
-        subtitle.grid(
-            row=1,
-            column=0,
-            columnspan=2,
-            sticky="w",
-            padx=30,
-            pady=(0, 25)
+            sticky="ew",
+            padx=SPACING["page_x"],
+            pady=(
+                SPACING["page_top"],
+                20
+            )
         )
 
     def create_test_panel(self):
 
-        panel = ctk.CTkFrame(
-            self,
-            corner_radius=12
+        panel = Card(
+            self
         )
 
         panel.grid(
-            row=2,
+            row=1,
             column=0,
             sticky="nsew",
-            padx=(30, 10),
-            pady=10
+            padx=(
+                SPACING["page_x"],
+                8
+            ),
+            pady=(
+                0,
+                SPACING["page_x"]
+            )
         )
 
         heading = ctk.CTkLabel(
             panel,
             text="Test Configuration",
-            font=ctk.CTkFont(
-                size=20,
-                weight="bold"
-            )
+            font=FONTS["section"],
+            text_color=COLORS["text"]
         )
 
         heading.pack(
             anchor="w",
-            padx=25,
-            pady=(25, 15)
+            padx=24,
+            pady=(24, 4)
         )
 
-        workload_label = ctk.CTkLabel(
+        subtitle = ctk.CTkLabel(
             panel,
-            text="Workload Level"
+            text=(
+                "Choose how demanding the "
+                "processor test should be."
+            ),
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
         )
 
-        workload_label.pack(
+        subtitle.pack(
             anchor="w",
-            padx=25,
-            pady=(5, 5)
+            padx=24,
+            pady=(0, 24)
+        )
+
+        ctk.CTkLabel(
+            panel,
+            text="Workload Level",
+            font=FONTS["body_bold"],
+            text_color=COLORS["text"]
+        ).pack(
+            anchor="w",
+            padx=24,
+            pady=(0, 7)
         )
 
         self.workload_option = ctk.CTkOptionMenu(
@@ -109,7 +135,15 @@ class CPUTestPage(ctk.CTkFrame):
                 "Medium",
                 "Heavy"
             ],
-            command=self.update_workload_info
+            command=self.update_workload_info,
+            height=42,
+            corner_radius=9,
+            fg_color=COLORS["surface_light"],
+            button_color=COLORS["accent"],
+            button_hover_color=COLORS["accent_hover"],
+            text_color=COLORS["text"],
+            dropdown_fg_color=COLORS["surface"],
+            dropdown_hover_color=COLORS["surface_hover"]
         )
 
         self.workload_option.set(
@@ -118,177 +152,295 @@ class CPUTestPage(ctk.CTkFrame):
 
         self.workload_option.pack(
             fill="x",
-            padx=25,
-            pady=(0, 15)
+            padx=24,
+            pady=(0, 18)
+        )
+
+        info_card = ctk.CTkFrame(
+            panel,
+            fg_color=COLORS["surface_light"],
+            corner_radius=10
+        )
+
+        info_card.pack(
+            fill="x",
+            padx=24,
+            pady=(0, 22)
+        )
+
+        self.workload_title = ctk.CTkLabel(
+            info_card,
+            text="Standard Performance Test",
+            font=FONTS["body_bold"],
+            text_color=COLORS["text"]
+        )
+
+        self.workload_title.pack(
+            anchor="w",
+            padx=16,
+            pady=(14, 3)
         )
 
         self.workload_info = ctk.CTkLabel(
-            panel,
-            text=(
-                "Standard performance test\n"
-                "400,000 total items"
-            ),
-            text_color="gray",
-            justify="left"
+            info_card,
+            text="400,000 total items",
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
         )
 
         self.workload_info.pack(
             anchor="w",
-            padx=25,
-            pady=(0, 20)
+            padx=16,
+            pady=(0, 14)
         )
 
-        self.start_button = ctk.CTkButton(
+        description = ctk.CTkLabel(
+            panel,
+            text=(
+                "The test performs repeated processing "
+                "operations and measures how quickly "
+                "your system completes the workload."
+            ),
+            font=FONTS["small"],
+            text_color=COLORS["text_muted"],
+            justify="left",
+            wraplength=420
+        )
+
+        description.pack(
+            anchor="w",
+            padx=24,
+            pady=(0, 22)
+        )
+
+        self.start_button = PrimaryButton(
             panel,
             text="Start CPU Test",
-            height=45,
             command=self.start_test
         )
 
         self.start_button.pack(
             fill="x",
-            padx=25,
-            pady=(5, 25)
+            padx=24,
+            pady=(0, 24)
         )
 
     def create_result_panel(self):
 
-        panel = ctk.CTkFrame(
-            self,
-            corner_radius=12
+        panel = Card(
+            self
         )
 
         panel.grid(
-            row=2,
+            row=1,
             column=1,
             sticky="nsew",
-            padx=(10, 30),
-            pady=10
-        )
-
-        heading = ctk.CTkLabel(
-            panel,
-            text="Test Results",
-            font=ctk.CTkFont(
-                size=20,
-                weight="bold"
+            padx=(
+                8,
+                SPACING["page_x"]
+            ),
+            pady=(
+                0,
+                SPACING["page_x"]
             )
         )
 
+        heading_frame = ctk.CTkFrame(
+            panel,
+            fg_color="transparent"
+        )
+
+        heading_frame.pack(
+            fill="x",
+            padx=24,
+            pady=(24, 0)
+        )
+
+        heading = ctk.CTkLabel(
+            heading_frame,
+            text="Test Results",
+            font=FONTS["section"],
+            text_color=COLORS["text"]
+        )
+
         heading.pack(
-            anchor="w",
-            padx=25,
-            pady=(25, 20)
+            side="left"
+        )
+
+        self.status_badge = StatusBadge(
+            heading_frame,
+            text="READY",
+            status="normal"
+        )
+
+        self.status_badge.pack(
+            side="right"
         )
 
         self.status_label = ctk.CTkLabel(
             panel,
             text="Ready to test",
-            text_color="gray"
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
         )
 
         self.status_label.pack(
-            pady=8
+            pady=(10, 14)
+        )
+
+        score_card = ctk.CTkFrame(
+            panel,
+            fg_color=COLORS["surface_light"],
+            corner_radius=12
+        )
+
+        score_card.pack(
+            fill="x",
+            padx=24,
+            pady=(0, 20)
         )
 
         self.score_label = ctk.CTkLabel(
-            panel,
+            score_card,
             text="--",
-            font=ctk.CTkFont(
-                size=42,
-                weight="bold"
-            )
+            font=FONTS["metric_large"],
+            text_color=COLORS["text"]
         )
 
         self.score_label.pack(
-            pady=(10, 0)
+            pady=(18, 0)
         )
 
         ctk.CTkLabel(
-            panel,
+            score_card,
             text="Performance Score",
-            text_color="gray"
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
         ).pack()
 
         self.rating_label = ctk.CTkLabel(
-            panel,
+            score_card,
             text="--",
-            font=ctk.CTkFont(
-                size=20,
-                weight="bold"
-            )
+            font=(
+                "Segoe UI",
+                18,
+                "bold"
+            ),
+            text_color=COLORS["accent"]
         )
 
         self.rating_label.pack(
-            pady=(20, 10)
+            pady=(8, 18)
         )
 
-        self.time_label = ctk.CTkLabel(
+        results_frame = ctk.CTkFrame(
             panel,
-            text="Processing Time: --"
+            fg_color="transparent"
         )
 
-        self.time_label.pack(
-            pady=4
+        results_frame.pack(
+            fill="x",
+            padx=24,
+            pady=(0, 12)
         )
 
-        self.work_label = ctk.CTkLabel(
-            panel,
-            text="Work Completed: --"
+        self.time_label = self.create_result_row(
+            results_frame,
+            "Processing Time"
         )
 
-        self.work_label.pack(
-            pady=4
+        self.work_label = self.create_result_row(
+            results_frame,
+            "Work Completed"
         )
 
-        self.rate_label = ctk.CTkLabel(
-            panel,
-            text="Processing Rate: --"
+        self.rate_label = self.create_result_row(
+            results_frame,
+            "Processing Rate"
         )
 
-        self.rate_label.pack(
-            pady=4
+        self.cpu_label = self.create_result_row(
+            results_frame,
+            "Peak CPU Usage"
         )
 
-        self.cpu_label = ctk.CTkLabel(
-            panel,
-            text="Peak CPU Usage: --"
+        self.average_cpu_label = self.create_result_row(
+            results_frame,
+            "Average CPU Usage"
         )
 
-        self.cpu_label.pack(
-            pady=4
+    def create_result_row(
+        self,
+        parent,
+        title
+    ):
+
+        row = ctk.CTkFrame(
+            parent,
+            fg_color="transparent"
         )
 
-        self.average_cpu_label = ctk.CTkLabel(
-            panel,
-            text="Average CPU Usage: --"
+        row.pack(
+            fill="x",
+            pady=8
         )
 
-        self.average_cpu_label.pack(
-            pady=4
+        name_label = ctk.CTkLabel(
+            row,
+            text=title,
+            font=FONTS["body"],
+            text_color=COLORS["text_secondary"]
         )
 
-    def update_workload_info(self, workload):
+        name_label.pack(
+            side="left"
+        )
+
+        value_label = ctk.CTkLabel(
+            row,
+            text="--",
+            font=FONTS["body_bold"],
+            text_color=COLORS["text"]
+        )
+
+        value_label.pack(
+            side="right"
+        )
+
+        return value_label
+
+    def update_workload_info(
+        self,
+        workload
+    ):
 
         descriptions = {
             "Light": (
-                "Quick system check\n"
+                "Quick System Check",
                 "50,000 total items"
             ),
 
             "Medium": (
-                "Standard performance test\n"
+                "Standard Performance Test",
                 "400,000 total items"
             ),
 
             "Heavy": (
-                "Intensive processing test\n"
+                "Intensive Processing Test",
                 "1,800,000 total items"
             )
         }
 
+        title, info = descriptions[
+            workload
+        ]
+
+        self.workload_title.configure(
+            text=title
+        )
+
         self.workload_info.configure(
-            text=descriptions[workload]
+            text=info
         )
 
     def start_test(self):
@@ -298,7 +450,12 @@ class CPUTestPage(ctk.CTkFrame):
         )
 
         self.status_label.configure(
-            text="Testing..."
+            text="Running processor benchmark..."
+        )
+
+        self.status_badge.set_status(
+            "RUNNING",
+            "warning"
         )
 
         self.score_label.configure(
@@ -309,27 +466,11 @@ class CPUTestPage(ctk.CTkFrame):
             text="Please wait"
         )
 
-        self.time_label.configure(
-            text="Processing Time: --"
-        )
+        self.reset_result_rows()
 
-        self.work_label.configure(
-            text="Work Completed: --"
+        workload = (
+            self.workload_option.get()
         )
-
-        self.rate_label.configure(
-            text="Processing Rate: --"
-        )
-
-        self.cpu_label.configure(
-            text="Peak CPU Usage: --"
-        )
-
-        self.average_cpu_label.configure(
-            text="Average CPU Usage: --"
-        )
-
-        workload = self.workload_option.get()
 
         thread = threading.Thread(
             target=self.run_test,
@@ -344,7 +485,32 @@ class CPUTestPage(ctk.CTkFrame):
             self.check_result_queue
         )
 
-    def run_test(self, workload):
+    def reset_result_rows(self):
+
+        self.time_label.configure(
+            text="--"
+        )
+
+        self.work_label.configure(
+            text="--"
+        )
+
+        self.rate_label.configure(
+            text="--"
+        )
+
+        self.cpu_label.configure(
+            text="--"
+        )
+
+        self.average_cpu_label.configure(
+            text="--"
+        )
+
+    def run_test(
+        self,
+        workload
+    ):
 
         try:
 
@@ -397,19 +563,25 @@ class CPUTestPage(ctk.CTkFrame):
                 data
             )
 
-    def display_result(self, result):
+    def display_result(
+        self,
+        result
+    ):
 
         self.status_label.configure(
             text=(
                 f"{result['workload']} "
-                "test completed"
+                "workload completed successfully."
             )
         )
 
+        self.status_badge.set_status(
+            "COMPLETED",
+            "success"
+        )
+
         self.score_label.configure(
-            text=str(
-                result["score"]
-            )
+            text=f"{result['score']:,}"
         )
 
         self.rating_label.configure(
@@ -418,35 +590,30 @@ class CPUTestPage(ctk.CTkFrame):
 
         self.time_label.configure(
             text=(
-                "Processing Time: "
                 f"{result['execution_time']} sec"
             )
         )
 
         self.work_label.configure(
             text=(
-                "Work Completed: "
                 f"{result['total_items']:,} items"
             )
         )
 
         self.rate_label.configure(
             text=(
-                "Processing Rate: "
                 f"{result['processing_rate']:,} items/sec"
             )
         )
 
         self.cpu_label.configure(
             text=(
-                "Peak CPU Usage: "
                 f"{result['peak_cpu']}%"
             )
         )
 
         self.average_cpu_label.configure(
             text=(
-                "Average CPU Usage: "
                 f"{result['average_cpu']}%"
             )
         )
@@ -464,25 +631,34 @@ class CPUTestPage(ctk.CTkFrame):
         except Exception as error:
 
             print(
-                f"CPU history save error: {error}"
+                "CPU history save error: "
+                f"{error}"
             )
 
         self.start_button.configure(
             state="normal"
         )
 
-    def show_error(self, error):
+    def show_error(
+        self,
+        error
+    ):
 
         print(
             f"CPU test error: {error}"
         )
 
         self.status_label.configure(
-            text="Test failed"
+            text="The CPU test could not be completed."
+        )
+
+        self.status_badge.set_status(
+            "FAILED",
+            "danger"
         )
 
         self.rating_label.configure(
-            text=error
+            text="Test Failed"
         )
 
         self.start_button.configure(

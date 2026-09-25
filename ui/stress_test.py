@@ -8,20 +8,40 @@ from tests.stress_benchmark import (
 
 from database.db import save_test_result
 
+from ui.theme import (
+    COLORS,
+    FONTS,
+    SPACING
+)
+
+from ui.components import (
+    PageHeader,
+    Card,
+    StatusBadge,
+    PrimaryButton
+)
+
 
 class StressTestPage(ctk.CTkFrame):
 
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__(
+            parent,
+            fg_color=COLORS["app_bg"]
+        )
 
         self.grid_columnconfigure(
             (0, 1),
+            weight=1,
+            uniform="stress_columns"
+        )
+
+        self.grid_rowconfigure(
+            1,
             weight=1
         )
 
-        self.stop_event = (
-            threading.Event()
-        )
+        self.stop_event = threading.Event()
 
         self.test_running = False
 
@@ -31,91 +51,103 @@ class StressTestPage(ctk.CTkFrame):
 
     def create_header(self):
 
-        title = ctk.CTkLabel(
+        header = PageHeader(
             self,
-            text="System Stress Test",
-            font=ctk.CTkFont(
-                size=30,
-                weight="bold"
+            title="System Stress Test",
+            subtitle=(
+                "Apply a controlled workload and "
+                "monitor system stability in real time."
             )
         )
 
-        title.grid(
+        header.grid(
             row=0,
             column=0,
             columnspan=2,
-            sticky="w",
-            padx=30,
-            pady=(30, 5)
-        )
-
-        subtitle = ctk.CTkLabel(
-            self,
-            text=(
-                "Apply a controlled workload "
-                "and monitor system stability."
-            ),
-            text_color="gray"
-        )
-
-        subtitle.grid(
-            row=1,
-            column=0,
-            columnspan=2,
-            sticky="w",
-            padx=30,
-            pady=(0, 25)
+            sticky="ew",
+            padx=SPACING["page_x"],
+            pady=(
+                SPACING["page_top"],
+                20
+            )
         )
 
     def create_test_panel(self):
 
-        panel = ctk.CTkFrame(
-            self,
-            corner_radius=12
+        panel = Card(
+            self
         )
 
         panel.grid(
-            row=2,
+            row=1,
             column=0,
             sticky="nsew",
-            padx=(30, 10),
-            pady=10
+            padx=(
+                SPACING["page_x"],
+                8
+            ),
+            pady=(
+                0,
+                SPACING["page_x"]
+            )
         )
 
         heading = ctk.CTkLabel(
             panel,
             text="Test Configuration",
-            font=ctk.CTkFont(
-                size=20,
-                weight="bold"
-            )
+            font=FONTS["section"],
+            text_color=COLORS["text"]
         )
 
         heading.pack(
             anchor="w",
-            padx=25,
-            pady=(25, 15)
+            padx=24,
+            pady=(24, 4)
+        )
+
+        subtitle = ctk.CTkLabel(
+            panel,
+            text=(
+                "Choose the test intensity and "
+                "how long the workload should run."
+            ),
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
+        )
+
+        subtitle.pack(
+            anchor="w",
+            padx=24,
+            pady=(0, 24)
         )
 
         ctk.CTkLabel(
             panel,
-            text="Stress Level"
+            text="Stress Level",
+            font=FONTS["body_bold"],
+            text_color=COLORS["text"]
         ).pack(
             anchor="w",
-            padx=25,
-            pady=(5, 5)
+            padx=24,
+            pady=(0, 7)
         )
 
-        self.intensity_option = (
-            ctk.CTkOptionMenu(
-                panel,
-                values=[
-                    "Light",
-                    "Medium",
-                    "Heavy"
-                ],
-                command=self.update_info
-            )
+        self.intensity_option = ctk.CTkOptionMenu(
+            panel,
+            values=[
+                "Light",
+                "Medium",
+                "Heavy"
+            ],
+            command=self.update_info,
+            height=42,
+            corner_radius=9,
+            fg_color=COLORS["surface_light"],
+            button_color=COLORS["accent"],
+            button_hover_color=COLORS["accent_hover"],
+            text_color=COLORS["text"],
+            dropdown_fg_color=COLORS["surface"],
+            dropdown_hover_color=COLORS["surface_hover"]
         )
 
         self.intensity_option.set(
@@ -124,28 +156,36 @@ class StressTestPage(ctk.CTkFrame):
 
         self.intensity_option.pack(
             fill="x",
-            padx=25,
-            pady=(0, 15)
+            padx=24,
+            pady=(0, 18)
         )
 
         ctk.CTkLabel(
             panel,
-            text="Duration"
+            text="Duration",
+            font=FONTS["body_bold"],
+            text_color=COLORS["text"]
         ).pack(
             anchor="w",
-            padx=25,
-            pady=(5, 5)
+            padx=24,
+            pady=(0, 7)
         )
 
-        self.duration_option = (
-            ctk.CTkOptionMenu(
-                panel,
-                values=[
-                    "10 Seconds",
-                    "20 Seconds",
-                    "30 Seconds"
-                ]
-            )
+        self.duration_option = ctk.CTkOptionMenu(
+            panel,
+            values=[
+                "10 Seconds",
+                "20 Seconds",
+                "30 Seconds"
+            ],
+            height=42,
+            corner_radius=9,
+            fg_color=COLORS["surface_light"],
+            button_color=COLORS["accent"],
+            button_hover_color=COLORS["accent_hover"],
+            text_color=COLORS["text"],
+            dropdown_fg_color=COLORS["surface"],
+            dropdown_hover_color=COLORS["surface_hover"]
         )
 
         self.duration_option.set(
@@ -154,184 +194,388 @@ class StressTestPage(ctk.CTkFrame):
 
         self.duration_option.pack(
             fill="x",
-            padx=25,
-            pady=(0, 15)
+            padx=24,
+            pady=(0, 18)
         )
 
-        self.info_label = (
-            ctk.CTkLabel(
-                panel,
-                text=(
-                    "Standard stress workload\n"
-                    "Recommended for general testing"
-                ),
-                text_color="gray",
-                justify="left"
-            )
+        info_card = ctk.CTkFrame(
+            panel,
+            fg_color=COLORS["surface_light"],
+            corner_radius=10
+        )
+
+        info_card.pack(
+            fill="x",
+            padx=24,
+            pady=(0, 22)
+        )
+
+        self.info_title = ctk.CTkLabel(
+            info_card,
+            text="Standard Stress Workload",
+            font=FONTS["body_bold"],
+            text_color=COLORS["text"]
+        )
+
+        self.info_title.pack(
+            anchor="w",
+            padx=16,
+            pady=(14, 3)
+        )
+
+        self.info_label = ctk.CTkLabel(
+            info_card,
+            text=(
+                "Recommended for general "
+                "stability testing."
+            ),
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"],
+            justify="left"
         )
 
         self.info_label.pack(
             anchor="w",
-            padx=25,
-            pady=(0, 20)
+            padx=16,
+            pady=(0, 14)
         )
 
-        self.start_button = (
-            ctk.CTkButton(
-                panel,
-                text="Start Stress Test",
-                height=45,
-                command=self.start_test
-            )
+        self.start_button = PrimaryButton(
+            panel,
+            text="Start Stress Test",
+            command=self.start_test
         )
 
         self.start_button.pack(
             fill="x",
-            padx=25,
-            pady=(5, 10)
+            padx=24,
+            pady=(0, 10)
         )
 
-        self.stop_button = (
-            ctk.CTkButton(
-                panel,
-                text="Stop Test",
-                height=45,
-                state="disabled",
-                command=self.stop_test
-            )
+        self.stop_button = ctk.CTkButton(
+            panel,
+            text="Stop Test",
+            height=42,
+            corner_radius=9,
+            state="disabled",
+            command=self.stop_test,
+            fg_color=COLORS["surface_light"],
+            hover_color=COLORS["surface_hover"],
+            text_color=COLORS["text"],
+            border_width=1,
+            border_color=COLORS["border"],
+            font=FONTS["body_bold"]
         )
 
         self.stop_button.pack(
             fill="x",
-            padx=25,
-            pady=(0, 25)
+            padx=24,
+            pady=(0, 24)
         )
 
     def create_monitor_panel(self):
 
-        panel = ctk.CTkFrame(
-            self,
-            corner_radius=12
+        panel = Card(
+            self
         )
 
         panel.grid(
-            row=2,
+            row=1,
             column=1,
             sticky="nsew",
-            padx=(10, 30),
-            pady=10
+            padx=(
+                8,
+                SPACING["page_x"]
+            ),
+            pady=(
+                0,
+                SPACING["page_x"]
+            )
+        )
+
+        heading_frame = ctk.CTkFrame(
+            panel,
+            fg_color="transparent"
+        )
+
+        heading_frame.pack(
+            fill="x",
+            padx=24,
+            pady=(24, 0)
         )
 
         heading = ctk.CTkLabel(
-            panel,
+            heading_frame,
             text="Live Monitoring",
-            font=ctk.CTkFont(
-                size=20,
-                weight="bold"
-            )
+            font=FONTS["section"],
+            text_color=COLORS["text"]
         )
 
         heading.pack(
-            anchor="w",
-            padx=25,
-            pady=(25, 15)
+            side="left"
         )
 
-        self.status_label = (
-            ctk.CTkLabel(
-                panel,
-                text="Ready to test",
-                text_color="gray"
-            )
+        self.status_badge = StatusBadge(
+            heading_frame,
+            text="READY",
+            status="normal"
+        )
+
+        self.status_badge.pack(
+            side="right"
+        )
+
+        self.status_label = ctk.CTkLabel(
+            panel,
+            text="Ready to test",
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
         )
 
         self.status_label.pack(
-            pady=8
+            pady=(10, 18)
         )
 
-        self.progress_bar = (
-            ctk.CTkProgressBar(
-                panel
-            )
+        metrics_frame = ctk.CTkFrame(
+            panel,
+            fg_color="transparent"
+        )
+
+        metrics_frame.pack(
+            fill="x",
+            padx=18,
+            pady=(0, 18)
+        )
+
+        metrics_frame.grid_columnconfigure(
+            (0, 1, 2),
+            weight=1,
+            uniform="stress_metrics"
+        )
+
+        self.cpu_value = self.create_metric_box(
+            metrics_frame,
+            0,
+            "CPU",
+            "--"
+        )
+
+        self.memory_value = self.create_metric_box(
+            metrics_frame,
+            1,
+            "Memory",
+            "--"
+        )
+
+        self.time_value = self.create_metric_box(
+            metrics_frame,
+            2,
+            "Time",
+            "--"
+        )
+
+        progress_frame = ctk.CTkFrame(
+            panel,
+            fg_color="transparent"
+        )
+
+        progress_frame.pack(
+            fill="x",
+            padx=24,
+            pady=(0, 20)
+        )
+
+        progress_header = ctk.CTkFrame(
+            progress_frame,
+            fg_color="transparent"
+        )
+
+        progress_header.pack(
+            fill="x",
+            pady=(0, 7)
+        )
+
+        ctk.CTkLabel(
+            progress_header,
+            text="Test Progress",
+            font=FONTS["body_bold"],
+            text_color=COLORS["text"]
+        ).pack(
+            side="left"
+        )
+
+        self.progress_text = ctk.CTkLabel(
+            progress_header,
+            text="0%",
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
+        )
+
+        self.progress_text.pack(
+            side="right"
+        )
+
+        self.progress_bar = ctk.CTkProgressBar(
+            progress_frame,
+            height=10,
+            corner_radius=5,
+            progress_color=COLORS["accent"],
+            fg_color=COLORS["border"]
         )
 
         self.progress_bar.pack(
+            fill="x"
+        )
+
+        self.progress_bar.set(
+            0
+        )
+
+        stats_card = ctk.CTkFrame(
+            panel,
+            fg_color=COLORS["surface_light"],
+            corner_radius=10
+        )
+
+        stats_card.pack(
             fill="x",
-            padx=30,
-            pady=(10, 20)
+            padx=24,
+            pady=(0, 18)
         )
 
-        self.progress_bar.set(0)
-
-        self.time_label = (
-            ctk.CTkLabel(
-                panel,
-                text="Elapsed Time: --"
-            )
+        self.cycles_label = self.create_result_row(
+            stats_card,
+            "Processing Cycles"
         )
 
-        self.time_label.pack(
-            pady=4
+        self.items_label = self.create_result_row(
+            stats_card,
+            "Work Processed"
         )
 
-        self.cpu_label = (
-            ctk.CTkLabel(
-                panel,
-                text="CPU Usage: --"
-            )
+        self.peak_cpu_label = self.create_result_row(
+            stats_card,
+            "Peak CPU Usage"
         )
 
-        self.cpu_label.pack(
-            pady=4
+        self.peak_memory_label = self.create_result_row(
+            stats_card,
+            "Peak Memory Usage"
         )
 
-        self.memory_label = (
-            ctk.CTkLabel(
-                panel,
-                text="Memory Usage: --"
-            )
+        result_card = ctk.CTkFrame(
+            panel,
+            fg_color=COLORS["accent_soft"],
+            corner_radius=12
         )
 
-        self.memory_label.pack(
-            pady=4
+        result_card.pack(
+            fill="x",
+            padx=24,
+            pady=(0, 24)
         )
 
-        self.cycles_label = (
-            ctk.CTkLabel(
-                panel,
-                text="Processing Cycles: --"
-            )
+        ctk.CTkLabel(
+            result_card,
+            text="SYSTEM STABILITY",
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
+        ).pack(
+            pady=(14, 4)
         )
 
-        self.cycles_label.pack(
-            pady=4
-        )
-
-        self.items_label = (
-            ctk.CTkLabel(
-                panel,
-                text="Work Processed: --"
-            )
-        )
-
-        self.items_label.pack(
-            pady=4
-        )
-
-        self.result_label = (
-            ctk.CTkLabel(
-                panel,
-                text="System Stability: --",
-                font=ctk.CTkFont(
-                    size=18,
-                    weight="bold"
-                )
-            )
+        self.result_label = ctk.CTkLabel(
+            result_card,
+            text="--",
+            font=("Segoe UI", 20, "bold"),
+            text_color=COLORS["text"]
         )
 
         self.result_label.pack(
-            pady=(20, 10)
+            pady=(0, 14)
         )
+
+    def create_metric_box(
+        self,
+        parent,
+        column,
+        title,
+        value
+    ):
+
+        box = ctk.CTkFrame(
+            parent,
+            fg_color=COLORS["surface_light"],
+            corner_radius=10
+        )
+
+        box.grid(
+            row=0,
+            column=column,
+            sticky="nsew",
+            padx=5
+        )
+
+        ctk.CTkLabel(
+            box,
+            text=title.upper(),
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
+        ).pack(
+            pady=(14, 4)
+        )
+
+        value_label = ctk.CTkLabel(
+            box,
+            text=value,
+            font=("Segoe UI", 23, "bold"),
+            text_color=COLORS["text"]
+        )
+
+        value_label.pack(
+            pady=(0, 14)
+        )
+
+        return value_label
+
+    def create_result_row(
+        self,
+        parent,
+        title
+    ):
+
+        row = ctk.CTkFrame(
+            parent,
+            fg_color="transparent"
+        )
+
+        row.pack(
+            fill="x",
+            padx=14,
+            pady=8
+        )
+
+        ctk.CTkLabel(
+            row,
+            text=title,
+            font=FONTS["body"],
+            text_color=COLORS["text_secondary"]
+        ).pack(
+            side="left"
+        )
+
+        value = ctk.CTkLabel(
+            row,
+            text="--",
+            font=FONTS["body_bold"],
+            text_color=COLORS["text"]
+        )
+
+        value.pack(
+            side="right"
+        )
+
+        return value
 
     def update_info(
         self,
@@ -340,23 +584,31 @@ class StressTestPage(ctk.CTkFrame):
 
         descriptions = {
             "Light": (
-                "Light system workload\n"
-                "Suitable for quick stability checks"
+                "Light Stress Workload",
+                "Suitable for quick stability checks."
             ),
 
             "Medium": (
-                "Standard stress workload\n"
-                "Recommended for general testing"
+                "Standard Stress Workload",
+                "Recommended for general stability testing."
             ),
 
             "Heavy": (
-                "Intensive system workload\n"
-                "Places sustained load on the system"
+                "Intensive Stress Workload",
+                "Places sustained load on the system."
             )
         }
 
+        title, description = descriptions[
+            intensity
+        ]
+
+        self.info_title.configure(
+            text=title
+        )
+
         self.info_label.configure(
-            text=descriptions[intensity]
+            text=description
         )
 
     def start_test(self):
@@ -391,14 +643,53 @@ class StressTestPage(ctk.CTkFrame):
         )
 
         self.status_label.configure(
-            text="Stress test running..."
+            text="Stress test is running..."
+        )
+
+        self.status_badge.set_status(
+            "RUNNING",
+            "warning"
         )
 
         self.result_label.configure(
-            text="System Stability: Testing..."
+            text="Testing..."
         )
 
-        self.progress_bar.set(0)
+        self.cpu_value.configure(
+            text="--"
+        )
+
+        self.memory_value.configure(
+            text="--"
+        )
+
+        self.time_value.configure(
+            text="0.0s"
+        )
+
+        self.cycles_label.configure(
+            text="--"
+        )
+
+        self.items_label.configure(
+            text="--"
+        )
+
+        self.peak_cpu_label.configure(
+            text="--"
+        )
+
+        self.peak_memory_label.configure(
+            text="--"
+        )
+
+        self.progress_bar.set(
+            0
+        )
+
+        self.progress_text.configure(
+            text="0%"
+        )
 
         thread = threading.Thread(
             target=self.run_test,
@@ -459,8 +750,7 @@ class StressTestPage(ctk.CTkFrame):
     ):
 
         progress = min(
-            data["elapsed"]
-            / duration,
+            data["elapsed"] / duration,
             1
         )
 
@@ -468,37 +758,28 @@ class StressTestPage(ctk.CTkFrame):
             progress
         )
 
-        self.time_label.configure(
-            text=(
-                "Elapsed Time: "
-                f"{data['elapsed']:.1f} sec"
-            )
+        self.progress_text.configure(
+            text=f"{int(progress * 100)}%"
         )
 
-        self.cpu_label.configure(
-            text=(
-                "CPU Usage: "
-                f"{data['cpu']:.1f}%"
-            )
+        self.cpu_value.configure(
+            text=f"{data['cpu']:.0f}%"
         )
 
-        self.memory_label.configure(
-            text=(
-                "Memory Usage: "
-                f"{data['memory']:.1f}%"
-            )
+        self.memory_value.configure(
+            text=f"{data['memory']:.0f}%"
+        )
+
+        self.time_value.configure(
+            text=f"{data['elapsed']:.1f}s"
         )
 
         self.cycles_label.configure(
-            text=(
-                "Processing Cycles: "
-                f"{data['cycles']}"
-            )
+            text=f"{data['cycles']:,}"
         )
 
         self.items_label.configure(
             text=(
-                "Work Processed: "
                 f"{data['processed_items']:,} items"
             )
         )
@@ -509,6 +790,11 @@ class StressTestPage(ctk.CTkFrame):
 
         self.status_label.configure(
             text="Stopping test..."
+        )
+
+        self.status_badge.set_status(
+            "STOPPING",
+            "warning"
         )
 
         self.stop_button.configure(
@@ -533,76 +819,107 @@ class StressTestPage(ctk.CTkFrame):
         if result["stopped"]:
 
             self.status_label.configure(
-                text="Test stopped"
+                text="Stress test stopped."
+            )
+
+            self.status_badge.set_status(
+                "STOPPED",
+                "warning"
             )
 
         else:
 
             self.status_label.configure(
-                text="Stress test completed"
+                text="Stress test completed successfully."
             )
 
-            self.progress_bar.set(1)
-
-        self.cpu_label.configure(
-            text=(
-                "CPU Usage: "
-                f"{result['average_cpu']}% avg / "
-                f"{result['peak_cpu']}% peak"
+            self.status_badge.set_status(
+                "COMPLETED",
+                "success"
             )
+
+            self.progress_bar.set(
+                1
+            )
+
+            self.progress_text.configure(
+                text="100%"
+            )
+
+        self.cpu_value.configure(
+            text=f"{result['average_cpu']}%"
         )
 
-        self.memory_label.configure(
-            text=(
-                "Memory Usage: "
-                f"{result['average_memory']}% avg / "
-                f"{result['peak_memory']}% peak"
-            )
+        self.memory_value.configure(
+            text=f"{result['average_memory']}%"
+        )
+
+        self.time_value.configure(
+            text=f"{result['duration']}s"
         )
 
         self.cycles_label.configure(
-            text=(
-                "Processing Cycles: "
-                f"{result['cycles']}"
-            )
+            text=f"{result['cycles']:,}"
         )
 
         self.items_label.configure(
             text=(
-                "Work Processed: "
                 f"{result['processed_items']:,} items"
             )
         )
 
+        self.peak_cpu_label.configure(
+            text=f"{result['peak_cpu']}%"
+        )
+
+        self.peak_memory_label.configure(
+            text=f"{result['peak_memory']}%"
+        )
+
         self.result_label.configure(
-            text=(
-                "System Stability: "
-                f"{result['stability']}"
-            )
+            text=result["stability"]
         )
 
         if not result["stopped"]:
 
-            save_test_result(
-                test_type="System Stress Test",
-                mode=result["intensity"],
-                result=result["stability"],
-                details=result
-            )
+            try:
+
+                save_test_result(
+                    test_type="System Stress Test",
+                    mode=result["intensity"],
+                    result=result["stability"],
+                    details=result
+                )
+
+            except Exception as error:
+
+                print(
+                    "Stress history save error: "
+                    f"{error}"
+                )
 
     def show_error(
         self,
         error
     ):
 
+        print(
+            f"Stress test error: {error}"
+        )
+
         self.test_running = False
 
         self.status_label.configure(
-            text="Stress test failed"
+            text="The stress test could not be completed."
+        )
+
+        self.status_badge.set_status(
+            "FAILED",
+            "danger"
         )
 
         self.result_label.configure(
-            text=error
+            text="Test Failed"
         )
 
         self.start_button.configure(

@@ -5,11 +5,26 @@ from database.db import (
     clear_test_history
 )
 
+from ui.theme import (
+    COLORS,
+    FONTS,
+    SPACING
+)
+
+from ui.components import (
+    PageHeader,
+    Card,
+    StatusBadge
+)
+
 
 class HistoryPage(ctk.CTkFrame):
 
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__(
+            parent,
+            fg_color=COLORS["app_bg"]
+        )
 
         self.grid_columnconfigure(
             0,
@@ -22,86 +37,93 @@ class HistoryPage(ctk.CTkFrame):
         )
 
         self.create_header()
-        self.create_controls()
+        self.create_toolbar()
         self.create_history_area()
 
         self.refresh_history()
 
     def create_header(self):
 
-        title = ctk.CTkLabel(
+        header = PageHeader(
             self,
-            text="Test History",
-            font=ctk.CTkFont(
-                size=30,
-                weight="bold"
+            title="Test History",
+            subtitle=(
+                "Review previously completed "
+                "performance tests and benchmark results."
             )
         )
 
-        title.grid(
+        header.grid(
             row=0,
             column=0,
-            sticky="w",
-            padx=30,
-            pady=(30, 5)
+            sticky="ew",
+            padx=SPACING["page_x"],
+            pady=(
+                SPACING["page_top"],
+                18
+            )
         )
 
-        subtitle = ctk.CTkLabel(
-            self,
-            text=(
-                "View previously completed "
-                "performance tests."
-            ),
-            text_color="gray"
-        )
+    def create_toolbar(self):
 
-        subtitle.grid(
-            row=1,
-            column=0,
-            sticky="w",
-            padx=30,
-            pady=(0, 20)
-        )
-
-    def create_controls(self):
-
-        controls = ctk.CTkFrame(
+        toolbar = ctk.CTkFrame(
             self,
             fg_color="transparent"
         )
 
-        controls.grid(
-            row=2,
+        toolbar.grid(
+            row=1,
             column=0,
             sticky="ew",
-            padx=30,
-            pady=(0, 10)
+            padx=SPACING["page_x"],
+            pady=(0, 14)
         )
 
-        self.refresh_button = (
-            ctk.CTkButton(
-                controls,
-                text="Refresh",
-                width=120,
-                command=self.refresh_history
-            )
+        self.count_label = ctk.CTkLabel(
+            toolbar,
+            text="0 saved tests",
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
         )
 
-        self.refresh_button.pack(
+        self.count_label.pack(
             side="left"
         )
 
-        self.clear_button = (
-            ctk.CTkButton(
-                controls,
-                text="Clear History",
-                width=120,
-                command=self.clear_history
-            )
+        clear_button = ctk.CTkButton(
+            toolbar,
+            text="Clear History",
+            width=120,
+            height=36,
+            corner_radius=8,
+            command=self.clear_history,
+            fg_color=COLORS["surface_light"],
+            hover_color=COLORS["surface_hover"],
+            border_width=1,
+            border_color=COLORS["border"],
+            text_color=COLORS["text"],
+            font=FONTS["body_bold"]
         )
 
-        self.clear_button.pack(
+        clear_button.pack(
             side="right"
+        )
+
+        refresh_button = ctk.CTkButton(
+            toolbar,
+            text="Refresh",
+            width=100,
+            height=36,
+            corner_radius=8,
+            command=self.refresh_history,
+            fg_color=COLORS["accent"],
+            hover_color=COLORS["accent_hover"],
+            font=FONTS["body_bold"]
+        )
+
+        refresh_button.pack(
+            side="right",
+            padx=(0, 8)
         )
 
     def create_history_area(self):
@@ -109,20 +131,21 @@ class HistoryPage(ctk.CTkFrame):
         self.history_frame = (
             ctk.CTkScrollableFrame(
                 self,
-                corner_radius=12
+                fg_color="transparent",
+                corner_radius=0
             )
         )
 
         self.history_frame.grid(
-            row=3,
+            row=2,
             column=0,
             sticky="nsew",
-            padx=30,
-            pady=(0, 30)
+            padx=SPACING["page_x"],
+            pady=(0, SPACING["page_x"])
         )
 
-        self.grid_rowconfigure(
-            3,
+        self.history_frame.grid_columnconfigure(
+            0,
             weight=1
         )
 
@@ -135,17 +158,16 @@ class HistoryPage(ctk.CTkFrame):
 
         history = get_test_history()
 
+        self.count_label.configure(
+            text=(
+                f"{len(history)} saved "
+                f"{'test' if len(history) == 1 else 'tests'}"
+            )
+        )
+
         if not history:
 
-            empty_label = ctk.CTkLabel(
-                self.history_frame,
-                text="No test history available.",
-                text_color="gray"
-            )
-
-            empty_label.pack(
-                pady=40
-            )
+            self.create_empty_state()
 
             return
 
@@ -169,6 +191,51 @@ class HistoryPage(ctk.CTkFrame):
                 created_at
             )
 
+    def create_empty_state(self):
+
+        empty_card = Card(
+            self.history_frame
+        )
+
+        empty_card.pack(
+            fill="x",
+            pady=10
+        )
+
+        icon = ctk.CTkLabel(
+            empty_card,
+            text="◷",
+            font=("Segoe UI", 34),
+            text_color=COLORS["text_muted"]
+        )
+
+        icon.pack(
+            pady=(28, 8)
+        )
+
+        title = ctk.CTkLabel(
+            empty_card,
+            text="No test history yet",
+            font=FONTS["section"],
+            text_color=COLORS["text"]
+        )
+
+        title.pack()
+
+        subtitle = ctk.CTkLabel(
+            empty_card,
+            text=(
+                "Complete a benchmark and "
+                "its result will appear here."
+            ),
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
+        )
+
+        subtitle.pack(
+            pady=(5, 28)
+        )
+
     def create_history_card(
         self,
         test_id,
@@ -179,35 +246,42 @@ class HistoryPage(ctk.CTkFrame):
         created_at
     ):
 
-        card = ctk.CTkFrame(
-            self.history_frame,
-            corner_radius=10
+        card = Card(
+            self.history_frame
         )
 
         card.pack(
             fill="x",
-            padx=10,
             pady=6
         )
 
-        left = ctk.CTkFrame(
+        top = ctk.CTkFrame(
             card,
+            fg_color="transparent"
+        )
+
+        top.pack(
+            fill="x",
+            padx=18,
+            pady=(16, 8)
+        )
+
+        left = ctk.CTkFrame(
+            top,
             fg_color="transparent"
         )
 
         left.pack(
             side="left",
-            padx=18,
-            pady=14
+            fill="x",
+            expand=True
         )
 
         title = ctk.CTkLabel(
             left,
             text=test_type,
-            font=ctk.CTkFont(
-                size=16,
-                weight="bold"
-            )
+            font=FONTS["body_bold"],
+            text_color=COLORS["text"]
         )
 
         title.pack(
@@ -220,53 +294,165 @@ class HistoryPage(ctk.CTkFrame):
             else "Standard"
         )
 
-        info = ctk.CTkLabel(
+        meta = ctk.CTkLabel(
             left,
             text=(
-                f"{mode_text} • "
-                f"{created_at}"
+                f"{mode_text}  •  {created_at}"
             ),
-            text_color="gray"
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
         )
 
-        info.pack(
-            anchor="w"
+        meta.pack(
+            anchor="w",
+            pady=(3, 0)
         )
 
         right = ctk.CTkFrame(
-            card,
+            top,
             fg_color="transparent"
         )
 
         right.pack(
-            side="right",
-            padx=18,
-            pady=14
+            side="right"
+        )
+
+        badge_status = self.get_badge_status(
+            result
+        )
+
+        badge = StatusBadge(
+            right,
+            text=str(result or "RESULT").upper(),
+            status=badge_status
+        )
+
+        badge.pack(
+            side="right"
         )
 
         if score is not None:
 
             score_label = ctk.CTkLabel(
                 right,
-                text=str(score),
-                font=ctk.CTkFont(
-                    size=18,
-                    weight="bold"
-                )
+                text=f"{score:,}",
+                font=("Segoe UI", 20, "bold"),
+                text_color=COLORS["text"]
             )
 
-            score_label.pack()
+            score_label.pack(
+                side="right",
+                padx=(0, 14)
+            )
 
-        result_label = ctk.CTkLabel(
-            right,
-            text=result or "--",
-            text_color="gray"
+        divider = ctk.CTkFrame(
+            card,
+            height=1,
+            fg_color=COLORS["border"]
         )
 
-        result_label.pack()
+        divider.pack(
+            fill="x",
+            padx=18
+        )
+
+        bottom = ctk.CTkFrame(
+            card,
+            fg_color="transparent"
+        )
+
+        bottom.pack(
+            fill="x",
+            padx=18,
+            pady=(10, 14)
+        )
+
+        ctk.CTkLabel(
+            bottom,
+            text=f"Record #{test_id}",
+            font=FONTS["small"],
+            text_color=COLORS["text_muted"]
+        ).pack(
+            side="left"
+        )
+
+        summary_text = self.get_summary_text(
+            test_type,
+            score,
+            result
+        )
+
+        ctk.CTkLabel(
+            bottom,
+            text=summary_text,
+            font=FONTS["small"],
+            text_color=COLORS["text_secondary"]
+        ).pack(
+            side="right"
+        )
+
+    def get_badge_status(
+        self,
+        result
+    ):
+
+        text = str(
+            result or ""
+        ).lower()
+
+        if (
+            "excellent" in text
+            or "very good" in text
+            or "good" in text
+            or "stable" in text
+        ):
+            return "success"
+
+        if (
+            "average" in text
+            or "heavy" in text
+            or "active" in text
+        ):
+            return "warning"
+
+        if (
+            "failed" in text
+            or "maximum" in text
+        ):
+            return "danger"
+
+        return "normal"
+
+    def get_summary_text(
+        self,
+        test_type,
+        score,
+        result
+    ):
+
+        if score is not None:
+
+            return (
+                f"Score {score:,} • "
+                f"{result or 'Completed'}"
+            )
+
+        if result:
+
+            return str(result)
+
+        return "Completed"
 
     def clear_history(self):
 
-        clear_test_history()
+        try:
 
-        self.refresh_history()
+            clear_test_history()
+
+            self.refresh_history()
+
+        except Exception as error:
+
+            print(
+                f"History clear error: {error}"
+            )

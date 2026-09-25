@@ -10,9 +10,15 @@ from ui.stress_test import StressTestPage
 from ui.all_in_one import AllInOnePage
 from ui.history import HistoryPage
 from ui.settings import SettingsPage
-from database.db import initialize_database
 
-ctk.set_appearance_mode("dark")
+from database.db import (
+    initialize_database,
+    get_setting
+)
+
+from ui.theme import COLORS
+
+
 ctk.set_default_color_theme("blue")
 
 
@@ -21,14 +27,24 @@ class AlgoBenchApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
+        self.configure(
+            fg_color=COLORS["app_bg"]
+        )
+
         self.title("AlgoBench")
         self.geometry("1200x750")
         self.minsize(1000, 650)
 
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(
+            1,
+            weight=1
+        )
 
-        # Sidebar
+        self.grid_rowconfigure(
+            0,
+            weight=1
+        )
+
         self.sidebar = Sidebar(
             self,
             self.show_page
@@ -40,10 +56,10 @@ class AlgoBenchApp(ctk.CTk):
             sticky="nsew"
         )
 
-        # Main content area
         self.content = ctk.CTkFrame(
             self,
-            corner_radius=0
+            corner_radius=0,
+            fg_color=COLORS["app_bg"]
         )
 
         self.content.grid(
@@ -52,14 +68,27 @@ class AlgoBenchApp(ctk.CTk):
             sticky="nsew"
         )
 
-        self.content.grid_rowconfigure(0, weight=1)
-        self.content.grid_columnconfigure(0, weight=1)
+        self.content.grid_rowconfigure(
+            0,
+            weight=1
+        )
+
+        self.content.grid_columnconfigure(
+            0,
+            weight=1
+        )
 
         self.pages = {}
 
         self.create_pages()
 
-        self.show_page("Dashboard")
+        self.show_page(
+            "Dashboard"
+        )
+
+        self.sidebar.set_active(
+            "Dashboard"
+        )
 
     def create_pages(self):
 
@@ -107,20 +136,37 @@ class AlgoBenchApp(ctk.CTk):
                 sticky="nsew"
             )
 
-    def show_page(self, page_name):
+    def show_page(
+        self,
+        page_name
+    ):
 
-        page = self.pages.get(page_name)
+        page = self.pages.get(
+            page_name
+        )
 
         if page:
+
             page.tkraise()
+
+            self.sidebar.set_active(
+                page_name
+            )
 
 
 if __name__ == "__main__":
 
     initialize_database()
 
-    app = AlgoBenchApp()
-    app.mainloop()
+    appearance = get_setting(
+        "appearance",
+        "Dark"
+    )
 
-    
-    
+    ctk.set_appearance_mode(
+        appearance.lower()
+    )
+
+    app = AlgoBenchApp()
+
+    app.mainloop()
