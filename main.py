@@ -1,11 +1,15 @@
 import customtkinter as ctk
 
-from system.monitor import (
-    get_cpu_usage,
-    get_memory_usage,
-    get_battery_info,
-    get_disk_usage
-)
+from ui.sidebar import Sidebar
+from ui.dashboard import DashboardPage
+from ui.system_overview import SystemOverviewPage
+from ui.cpu_test import CPUTestPage
+from ui.memory_test import MemoryTestPage
+from ui.performance_test import PerformanceTestPage
+from ui.stress_test import StressTestPage
+from ui.all_in_one import AllInOnePage
+from ui.history import HistoryPage
+from ui.settings import SettingsPage
 
 
 ctk.set_appearance_mode("dark")
@@ -24,222 +28,94 @@ class AlgoBenchApp(ctk.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.create_sidebar()
-        self.create_dashboard()
-
-        self.update_system_stats()
-
-    def create_sidebar(self):
-        sidebar = ctk.CTkFrame(
+        # Sidebar
+        self.sidebar = Sidebar(
             self,
-            width=220,
-            corner_radius=0
+            self.show_page
         )
 
-        sidebar.grid(
+        self.sidebar.grid(
             row=0,
             column=0,
             sticky="nsew"
         )
 
-        sidebar.grid_propagate(False)
-
-        logo = ctk.CTkLabel(
-            sidebar,
-            text="AlgoBench",
-            font=ctk.CTkFont(
-                size=26,
-                weight="bold"
-            )
-        )
-
-        logo.pack(
-            pady=(30, 40)
-        )
-
-        buttons = [
-            "Dashboard",
-            "System Overview",
-            "CPU Test",
-            "Memory Test",
-            "Performance Test",
-            "Stress Test",
-            "All-in-One Test",
-            "History",
-            "Settings"
-        ]
-
-        for name in buttons:
-
-            button = ctk.CTkButton(
-                sidebar,
-                text=name,
-                height=40,
-                anchor="w"
-            )
-
-            button.pack(
-                fill="x",
-                padx=20,
-                pady=5
-            )
-
-    def create_dashboard(self):
-        self.dashboard = ctk.CTkFrame(
+        # Main content area
+        self.content = ctk.CTkFrame(
             self,
             corner_radius=0
         )
 
-        self.dashboard.grid(
+        self.content.grid(
             row=0,
             column=1,
             sticky="nsew"
         )
 
-        title = ctk.CTkLabel(
-            self.dashboard,
-            text="System Dashboard",
-            font=ctk.CTkFont(
-                size=30,
-                weight="bold"
+        self.content.grid_rowconfigure(0, weight=1)
+        self.content.grid_columnconfigure(0, weight=1)
+
+        self.pages = {}
+
+        self.create_pages()
+
+        self.show_page("Dashboard")
+
+    def create_pages(self):
+
+        self.pages["Dashboard"] = DashboardPage(
+            self.content
+        )
+
+        self.pages["System Overview"] = SystemOverviewPage(
+            self.content
+        )
+
+        self.pages["CPU Test"] = CPUTestPage(
+            self.content
+        )
+
+        self.pages["Memory Test"] = MemoryTestPage(
+            self.content
+        )
+
+        self.pages["Performance Test"] = PerformanceTestPage(
+            self.content
+        )
+
+        self.pages["Stress Test"] = StressTestPage(
+            self.content
+        )
+
+        self.pages["All-in-One Test"] = AllInOnePage(
+            self.content
+        )
+
+        self.pages["History"] = HistoryPage(
+            self.content
+        )
+
+        self.pages["Settings"] = SettingsPage(
+            self.content
+        )
+
+        for page in self.pages.values():
+
+            page.grid(
+                row=0,
+                column=0,
+                sticky="nsew"
             )
-        )
 
-        title.pack(
-            anchor="w",
-            padx=30,
-            pady=(30, 10)
-        )
+    def show_page(self, page_name):
 
-        subtitle = ctk.CTkLabel(
-            self.dashboard,
-            text="Monitor your system and run performance tests.",
-            text_color="gray"
-        )
+        page = self.pages.get(page_name)
 
-        subtitle.pack(
-            anchor="w",
-            padx=30
-        )
-
-        card_container = ctk.CTkFrame(
-            self.dashboard,
-            fg_color="transparent"
-        )
-
-        card_container.pack(
-            fill="x",
-            padx=30,
-            pady=30
-        )
-
-        self.cpu_value = self.create_card(
-            card_container,
-            "CPU Usage"
-        )
-
-        self.memory_value = self.create_card(
-            card_container,
-            "Memory Usage"
-        )
-
-        self.battery_value = self.create_card(
-            card_container,
-            "Battery"
-        )
-
-        self.disk_value = self.create_card(
-            card_container,
-            "Disk Usage"
-        )
-
-    def create_card(
-        self,
-        parent,
-        title
-    ):
-        card = ctk.CTkFrame(
-            parent,
-            height=130
-        )
-
-        card.pack(
-            side="left",
-            padx=(0, 15),
-            expand=True,
-            fill="x"
-        )
-
-        card.pack_propagate(False)
-
-        label = ctk.CTkLabel(
-            card,
-            text=title,
-            text_color="gray",
-            font=ctk.CTkFont(
-                size=14
-            )
-        )
-
-        label.pack(
-            pady=(25, 5)
-        )
-
-        value = ctk.CTkLabel(
-            card,
-            text="--",
-            font=ctk.CTkFont(
-                size=25,
-                weight="bold"
-            )
-        )
-
-        value.pack()
-
-        return value
-
-    def update_system_stats(self):
-
-        cpu = get_cpu_usage()
-
-        memory = get_memory_usage()
-
-        battery = get_battery_info()
-
-        disk = get_disk_usage()
-
-        self.cpu_value.configure(
-            text=f"{cpu}%"
-        )
-
-        self.memory_value.configure(
-            text=f"{memory['percent']}%"
-        )
-
-        if battery["available"]:
-
-            battery_text = f"{battery['percent']}%"
-
-            if battery["charging"]:
-                battery_text += " ⚡"
-
-        else:
-            battery_text = "N/A"
-
-        self.battery_value.configure(
-            text=battery_text
-        )
-
-        self.disk_value.configure(
-            text=f"{disk['percent']}%"
-        )
-
-        self.after(
-            1000,
-            self.update_system_stats
-        )
+        if page:
+            page.tkraise()
 
 
 if __name__ == "__main__":
+
     app = AlgoBenchApp()
     app.mainloop()
