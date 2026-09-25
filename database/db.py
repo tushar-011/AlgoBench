@@ -1,7 +1,28 @@
 import json
+import os
 import sqlite3
 from pathlib import Path
 
+
+APP_DATA_DIR = (
+    Path(
+        os.getenv(
+            "LOCALAPPDATA",
+            Path.home()
+        )
+    )
+    / "AlgoBench"
+)
+
+APP_DATA_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+DATABASE_PATH = (
+    APP_DATA_DIR
+    / "algobench.db"
+)
 
 DATABASE_PATH = (
     Path(__file__).resolve().parent.parent
