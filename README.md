@@ -1064,19 +1064,6 @@ Built with **Python + CustomTkinter + psutil + Matplotlib + SQLite**
 
 ---
 
-## 🎓 Academic Information
-
-**Project:** AlgoBench  
-**Project Type:** Mini Project  
-**Domain:** Data Structures and Algorithms / System Benchmarking  
-**Course:** MCA Data Science  
-**University:** Chandigarh University  
-**Platform:** Windows Desktop  
-**Language:** Python  
-**Database:** SQLite  
-
----
-
 ## 📜 Disclaimer
 
 AlgoBench uses custom workloads and custom scoring formulas created specifically for this project.
